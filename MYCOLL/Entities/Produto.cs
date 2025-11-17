@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MYCOLL.Entities
 {
-    public class Produtos
+    public class Produto : IEquatable<Produto>
     {
         public int Id { get; set; }
         [StringLength(100)]
@@ -35,5 +35,25 @@ namespace MYCOLL.Entities
         public ModoEntrega modoEntrega { get; set; }
         [NotMapped]
         public IFormFile? ImageFile { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Produto);
+        }
+
+        public bool Equals(Produto? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            // Dois produtos são iguais se tiverem o mesmo Id
+            return Id == other.Id;
+        }
+
+        // OBRIGATÓRIO: O hash code deve ser baseado no mesmo campo que o Equals
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }
