@@ -1,6 +1,11 @@
-﻿namespace MYCOLL.Entities.Users
+﻿using MYCOLL.Entities.Interfaces;
+
+namespace MYCOLL.Entities.Users
 {
-    public class Class
+    public class Fornecedores : IUtilizador
     {
+        public int tipoUtilizador => (int)IUtilizador.TipoUtilizador.fornecedor;
+
+        public Produto[]? produtosVendidos { get; set; }
     }
 }

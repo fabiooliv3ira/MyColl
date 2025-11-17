@@ -1,6 +1,6 @@
 ﻿namespace MYCOLL.Entities.Interfaces
 {
-    public interface Utilizador
+    public interface IUtilizador
     {
         enum TipoUtilizador
         {
@@ -8,6 +8,7 @@
             cliente = 2,
             fornecedor = 3
         }
+        int id { get; set; }
         int tipoUtilizador { get; }
     }
 }
