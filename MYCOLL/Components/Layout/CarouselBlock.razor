@@ -1,0 +1,62 @@
+﻿@using MYCOLL.Entities
+@code {
+    [Parameter]
+	[EditorRequired]
+    public Produto Product { get; set; }
+}
+<div class="product-card">
+    <img src="@Product.Imagem" alt="@Product.Nome" />
+    <div class="overlay">
+        <span class="title">@Product.Nome</span>
+    </div>
+</div>
+
+<style>
+    .product-card {
+        min-width: 200px;
+        height: 120px;
+        border-radius: 4px;
+        margin-right: 10px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: scale(1.1);
+        z-index: 10;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+        .product-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        }
+
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        background: rgba(0,0,0,0.7);
+        width: 100%;
+        opacity: 0;
+        transition: opacity 0.3s;
+        padding: 5px;
+        text-align: center;
+    }
+
+    .product-card:hover .overlay {
+        opacity: 1;
+    }
+
+    .title {
+        color: white;
+        font-size: 0.8rem;
+        font-family: sans-serif;
+    }
+</style>
+
+@code {
+
+}

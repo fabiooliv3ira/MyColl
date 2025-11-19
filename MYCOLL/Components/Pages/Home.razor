@@ -1,7 +1,110 @@
 ﻿@page "/"
+@using MYCOLL.Entities
+@using MYCOLL.Components.Layout
 
 <PageTitle>Home</PageTitle>
 
 <h1>MyCOLL</h1>
 
+<Carousel Title="Electrónica Destacada" Products="MeusProdutos" />
+
 <img src="/img/frutaria.jpg" alt="frutaria" class=" = "img-fluid img-thumbnail" />
+
+@code {
+    List<Produto> MeusProdutos = new List<Produto>
+{
+ new Produto
+    {
+        Id = 1,
+        Nome = "Maçã Fuji",
+        Detalhe = "Doce e crocante, origem nacional",
+        URLImagem = "https://picsum.photos/300/200?random=10",
+        Preco = 2.50m,
+        Promocao = true,
+        MaisVendido = true,
+        EmStock = 200,
+        Disponivel = true,
+        CategoriaId = 10
+    },
+    new Produto
+    {
+        Id = 2,
+        Nome = "Banana Prata",
+        Detalhe = "Rica em potássio, cacho fresco",
+        URLImagem = "https://picsum.photos/300/200?random=11",
+        Preco = 1.20m,
+        Promocao = false,
+        MaisVendido = true,
+        EmStock = 150,
+        Disponivel = true,
+        CategoriaId = 10
+    },
+    new Produto
+    {
+        Id = 3,
+        Nome = "Morangos Selecionados",
+        Detalhe = "Caixa de 500g, orgânicos",
+        URLImagem = "https://picsum.photos/300/200?random=12",
+        Preco = 4.99m,
+        Promocao = true,
+        MaisVendido = false,
+        EmStock = 50,
+        Disponivel = true,
+        CategoriaId = 10
+    },
+    new Produto
+    {
+        Id = 4,
+        Nome = "Laranja Bahia",
+        Detalhe = "Ideal para sucos, sem sementes",
+        URLImagem = "https://picsum.photos/300/200?random=13",
+        Preco = 3.00m,
+        Promocao = false,
+        MaisVendido = false,
+        EmStock = 300,
+        Disponivel = true,
+        CategoriaId = 10
+    },
+    new Produto
+    {
+        Id = 5,
+        Nome = "Uva Thompson",
+        Detalhe = "Sem sementes, muito doce",
+        URLImagem = "https://picsum.photos/300/200?random=14",
+        Preco = 6.50m,
+        Promocao = false,
+        MaisVendido = true,
+        EmStock = 80,
+        Disponivel = true,
+        CategoriaId = 10
+    },
+
+     new Produto
+    {
+        Id = 6,
+        Nome = "Uva Thompson",
+        Detalhe = "Sem sementes, muito doce",
+        URLImagem = "https://picsum.photos/300/200?random=14",
+        Preco = 6.50m,
+        Promocao = false,
+        MaisVendido = true,
+        EmStock = 80,
+        Disponivel = true,
+        CategoriaId = 10
+    },
+     new Produto
+    {
+        Id = 7,
+        Nome = "Uva Thompson",
+        Detalhe = "Sem sementes, muito doce",
+        URLImagem = "https://picsum.photos/300/200?random=14",
+        Preco = 6.50m,
+        Promocao = false,
+        MaisVendido = true,
+        EmStock = 80,
+        Disponivel = true,
+        CategoriaId = 10
+    }
+   
+};
+}

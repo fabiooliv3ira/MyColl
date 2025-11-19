@@ -13,6 +13,6 @@ namespace MYCOLL.Entities
         public string? Detalhe { get; set; }
 
         [JsonIgnore]
-        public ICollection<Produtos>? produtos { get; set; }
+        public ICollection<Produto>? produtos { get; set; }
     }
 }
