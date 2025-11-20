@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MYCOLL.Entities;
 
 namespace MYCOLL.Data
 {
@@ -9,12 +10,12 @@ namespace MYCOLL.Data
             RoleManager<IdentityRole> roleManager)
         {
             // Adicionar default Roles
-            string[] roles = { "Admin", "Gestor", "Cliente" };
+            String[] roles = { TipoUtilizador.anonimo, TipoUtilizador.fornecedor, TipoUtilizador.cliente };
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
-                    IdentityRole roleRole = new IdentityRole();
+                    IdentityRole roleRole = new IdentityRole(role);
                     await roleManager.CreateAsync(roleRole);
                 }
             }

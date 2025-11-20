@@ -1,12 +1,18 @@
 ﻿@using MYCOLL.Entities
 
-<h3>Carousel</h3>
-
 <div class="carousel-row">
     <div class="row-container">
         @foreach (var item in Products)
         {
-            <CarouselBlock Product="item" />
+            if(Type == "Big")
+            {
+                <CarouselBlockBig Product="item" />
+            }
+            else
+            {
+                <CarouselBlockSmall Product="item" />
+            }
+            
         }
     </div>
 </div>
@@ -15,6 +21,10 @@
     [Parameter]
 	[EditorRequired]
     public string Title { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public string Type { get; set; }
 
     [Parameter]
 	[EditorRequired]

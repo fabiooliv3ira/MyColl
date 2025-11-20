@@ -4,107 +4,101 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>MyCOLL</h1>
+<Carousel Title="Seleção" Products="MeusProdutos" Type="Small"/>
 
-<Carousel Title="Electrónica Destacada" Products="MeusProdutos" />
+<Carousel Title="Destacados" Products="meusProdutos2" Type="Big" />
 
-<img src="/img/frutaria.jpg" alt="frutaria" class=" = "img-fluid img-thumbnail" />
+<h4>A nossa Sugestão: </h4>
+
 
 @code {
     List<Produto> MeusProdutos = new List<Produto>
-{
- new Produto
     {
-        Id = 1,
-        Nome = "Maçã Fuji",
-        Detalhe = "Doce e crocante, origem nacional",
-        URLImagem = "https://picsum.photos/300/200?random=10",
-        Preco = 2.50m,
-        Promocao = true,
-        MaisVendido = true,
-        EmStock = 200,
-        Disponivel = true,
-        CategoriaId = 10
-    },
-    new Produto
+        new Produto
+        {
+            Id = 1,
+            Nome = "Açaí na Tigela",
+            Detalhe = "Açaí fresco com banana e granola",
+            URLImagem = "/images/acai.png",
+            Preco = 8.50m,
+            Disponivel = true,
+            CategoriaId = 1
+        },
+        new Produto
+        {
+            Id = 2,
+            Nome = "Bananas",
+            Detalhe = "Cacho de bananas frescas",
+            URLImagem = "/images/bananas.jpg",
+            Preco = 1.99m,
+            Disponivel = true,
+            CategoriaId = 1
+        },
+        new Produto
+        {
+            Id = 3,
+            Nome = "Cerejas",
+            Detalhe = "Cerejas vermelhas selecionadas",
+            URLImagem = "/images/cereja.jpg",
+            Preco = 4.50m,
+            Disponivel = true,
+            CategoriaId = 1
+        },
+        new Produto
+        {
+            Id = 4,
+            Nome = "Cesto de Frutas",
+            Detalhe = "Cesto completo para presente",
+            URLImagem = "/images/cestofrutas.jpg",
+            Preco = 35.00m,
+            MaisVendido = true,
+            Disponivel = true,
+            CategoriaId = 2
+        },
+        new Produto
+        {
+            Id = 5,
+            Nome = "Compota de Pêssego",
+            Detalhe = "Doce caseiro em frasco",
+            URLImagem = "/images/compotapessego.jpg",
+            Preco = 6.20m,
+            Disponivel = true,
+            CategoriaId = 3
+        },
+        new Produto
+        {
+            Id = 6,
+            Nome = "Crepe de Morango",
+            Detalhe = "Crepe com chocolate e morangos",
+            URLImagem = "/images/crepemorangoschocolate.png",
+            Preco = 5.00m,
+            Promocao = true,
+            Disponivel = true,
+            CategoriaId = 4
+        }
+    };
+    List<Produto> meusProdutos2 = new List<Produto>
     {
-        Id = 2,
-        Nome = "Banana Prata",
-        Detalhe = "Rica em potássio, cacho fresco",
-        URLImagem = "https://picsum.photos/300/200?random=11",
-        Preco = 1.20m,
-        Promocao = false,
-        MaisVendido = true,
-        EmStock = 150,
-        Disponivel = true,
-        CategoriaId = 10
-    },
-    new Produto
-    {
-        Id = 3,
-        Nome = "Morangos Selecionados",
-        Detalhe = "Caixa de 500g, orgânicos",
-        URLImagem = "https://picsum.photos/300/200?random=12",
-        Preco = 4.99m,
-        Promocao = true,
-        MaisVendido = false,
-        EmStock = 50,
-        Disponivel = true,
-        CategoriaId = 10
-    },
-    new Produto
-    {
-        Id = 4,
-        Nome = "Laranja Bahia",
-        Detalhe = "Ideal para sucos, sem sementes",
-        URLImagem = "https://picsum.photos/300/200?random=13",
-        Preco = 3.00m,
-        Promocao = false,
-        MaisVendido = false,
-        EmStock = 300,
-        Disponivel = true,
-        CategoriaId = 10
-    },
-    new Produto
-    {
-        Id = 5,
-        Nome = "Uva Thompson",
-        Detalhe = "Sem sementes, muito doce",
-        URLImagem = "https://picsum.photos/300/200?random=14",
-        Preco = 6.50m,
-        Promocao = false,
-        MaisVendido = true,
-        EmStock = 80,
-        Disponivel = true,
-        CategoriaId = 10
-    },
-
-     new Produto
-    {
-        Id = 6,
-        Nome = "Uva Thompson",
-        Detalhe = "Sem sementes, muito doce",
-        URLImagem = "https://picsum.photos/300/200?random=14",
-        Preco = 6.50m,
-        Promocao = false,
-        MaisVendido = true,
-        EmStock = 80,
-        Disponivel = true,
-        CategoriaId = 10
-    },
-     new Produto
-    {
-        Id = 7,
-        Nome = "Uva Thompson",
-        Detalhe = "Sem sementes, muito doce",
-        URLImagem = "https://picsum.photos/300/200?random=14",
-        Preco = 6.50m,
-        Promocao = false,
-        MaisVendido = true,
-        EmStock = 80,
-        Disponivel = true,
-        CategoriaId = 10
-    }
-   
-};
+        new Produto
+        {
+            Id = 8,
+            Nome = "Compota de Pêssego",
+            Detalhe = "Doce caseiro em frasco",
+            URLImagem = "/images/compotapessego.jpg",
+            Preco = 6.20m,
+            Disponivel = true,
+            CategoriaId = 3
+        },
+        new Produto
+        {
+            Id = 9,
+            Nome = "Crepe de Morango",
+            Detalhe = "Crepe com chocolate e morangos",
+            URLImagem = "/images/crepemorangoschocolate.png",
+            Preco = 5.00m,
+            Promocao = true,
+            Disponivel = true,
+            CategoriaId = 4
+        }
+    };
 }
