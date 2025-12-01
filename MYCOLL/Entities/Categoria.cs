@@ -7,12 +7,10 @@ namespace MYCOLL.Entities
 {
 	public class Categoria
 	{
-		public int IdCategoria { get; set; }
+		public int Id { get; set; }
 		public string Nome { get; set; } = null!;
 		public bool Ativo { get; set; }
 
-		// Navigation
-		public virtual ICollection<SubCategoria> Subcategorias { get; set; } = new List<SubCategoria>();
-		public virtual ICollection<Produto> Produtos { get; set; } = new List<Produto>();
+
 	}
 }
