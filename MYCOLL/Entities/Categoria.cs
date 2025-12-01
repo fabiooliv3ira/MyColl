@@ -11,6 +11,5 @@ namespace MYCOLL.Entities
 		public string Nome { get; set; } = null!;
 		public bool Ativo { get; set; }
 
-
 	}
 }

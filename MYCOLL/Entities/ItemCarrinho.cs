@@ -11,6 +11,5 @@
 		public int EncomendaId { get; set; }
 		public int ProdutoId { get; set; }
 
-
 	}
 }

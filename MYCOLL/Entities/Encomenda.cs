@@ -13,7 +13,9 @@ namespace MYCOLL.Entities
 		public decimal ValorTotal { get; set; }
 
 		// FKs
-
+		public int ClienteId { get; set; }
 		public int? FuncionarioId { get; set; }
+
+	
 	}
 }
