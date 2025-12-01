@@ -1,12 +1,15 @@
-﻿using MYCOLL.Entities.Interfaces;
+﻿using System.Collections.Generic;
 
 namespace MYCOLL.Entities.Users
 {
-    public class Fornecedores : IUtilizador
-    {
-        public int id { get; set; }
-        public int tipoUtilizador => (int)IUtilizador.TipoUtilizador.fornecedor;
+	public class Fornecedor
+	{
+		public int IdFornecedor { get; set; }
+		public string NomeEmpresa { get; set; } = null!;
+		public string Email { get; set; } = null!;
+		public string PasswordHash { get; set; } = null!;
 
-        public Produto[]? produtosVendidos { get; set; }
-    }
+		// Navigation
+		public virtual ICollection<MYCOLL.Entities.Produto> Produtos { get; set; } = new List<MYCOLL.Entities.Produto>();
+	}
 }
