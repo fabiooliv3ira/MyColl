@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using MYCOLL.Entities.Users;
 
 using System;
 
@@ -10,7 +9,8 @@ namespace MYCOLL.Entities
 	public class Produto
 	{
 		public int Id { get; set; }
-		public string Nome { get; set; } = null!;
+        [Required(ErrorMessage = "Mete nome nisso senão não deixo!")]
+        public string Nome { get; set; } = null!;
 		public string? Descricao { get; set; }
 		public decimal PrecoBase { get; set; }
 		public decimal PrecoFinal { get; set; }
@@ -21,9 +21,14 @@ namespace MYCOLL.Entities
 		public string URLImagem { get; set; } = null!;
 
 		// FKs
-		public int FornecedorId { get; set; }
 		public int CategoriaId { get; set; }
 		public int SubcategoriaId { get; set; }
 
-	}
+        [MaxLength(5242880)]
+        public byte[]? Imagem { get; set; }
+
+        [NotMapped] // Diz à entityCore para não mapear esta propriedade na base de dados
+        public IFormFile? ImageFile { get; set; }
+
+    }
 }

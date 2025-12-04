@@ -1,0 +1,117 @@
+﻿@page "/admin/users"
+
+@using Microsoft.AspNetCore.Identity
+@using MYCOLL.Data
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+
+<PageTitle>Gestão de Utilizadores</PageTitle>
+
+<h3>Gestão de Utilizadores</h3>
+
+@if (users == null)
+{
+    <p>A carregar utilizadores...</p>
+}
+else
+{
+    <div class="row bg-dark text-white">
+        <div class="col-2">
+            Username
+        </div>
+        <div class="col-2">Nome</div>
+        <div class="col-2">Apelido</div>
+        <div class="col-1">NIF</div>
+        <div class="col-4">Roles</div>
+    </div>
+    @foreach (var user in users)
+    {
+        <div class="row border-bottom py-2">
+            <div class="col-2">@user.Email</div>
+            <div class="col-2">@user.Nome</div>
+            <div class="col-2">@user.Apelido</div>
+            <div class="col-1">@user.NIF</div>
+            <div class="col-4">
+                @if (userWithRoles.ContainsKey(user.Id))
+                {
+                    @foreach (var role in userWithRoles[user.Id])
+                    {
+                        <span class="badge bg-info">
+                            @role
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user, role)" style="margin-left: 5px; padding: 2px 6px;">x</button>
+                        </span>
+                        </span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">Sem roles</span>
+                }
+
+                @if (roles != null && roles.Count > 0)
+                {
+                    <div class="mt-2">
+                        <select class="form-select form-select-sm" @onchange="(ChangeEventArgs e) => HandleRoleSelection(user, e)" style="max-width: 150px; display: inline-block;">
+                            <option value="">Adicionar Role...</option>
+                            @foreach (var role in roles)
+                            {
+                                @if (!userWithRoles[user.Id].Contains(role.Name!))
+                                {
+                                    <option value="@role.Name">@role.Name</option>
+                                                                }
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+
+    private List<ApplicationUser>? users;
+    private List<IdentityRole>? roles;
+
+    private Dictionary<string, List<string>> userWithRoles = new();
+
+
+
+    protected async Task CarregarDados()
+    {
+        users = UserManager.Users.ToList();
+        userWithRoles.Clear();
+
+        foreach (var user in users)
+        {
+            var userRoles = await UserManager.GetRolesAsync(user);
+            userWithRoles[user.Id] = userRoles.ToList();
+        }
+
+        roles = RoleManager.Roles.ToList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        await CarregarDados();
+    }
+
+    private async Task RemoveRole(ApplicationUser user, string role)
+    {
+        await UserManager.RemoveFromRoleAsync(user, role);
+        await CarregarDados();
+    }
+
+    private async Task HandleRoleSelection(ApplicationUser user, ChangeEventArgs e)
+    {
+        string? selectedRole = e.Value?.ToString();
+
+        if (!string.IsNullOrEmpty(selectedRole))
+        {
+            await UserManager.AddToRoleAsync(user, selectedRole);
+            await CarregarDados();
+        }
+    }
+
+}

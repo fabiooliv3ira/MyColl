@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MYCOLL.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateIdentitySchema : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,6 +30,14 @@ namespace MYCOLL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Apelido = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NIF = table.Column<long>(type: "bigint", nullable: true),
+                    Rua = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Localidade1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Localidade2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Pais = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fotografia = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -48,6 +56,107 @@ namespace MYCOLL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categorias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categorias", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Encomendas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Encomendas", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItensCarrinho",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantidade = table.Column<int>(type: "int", nullable: false),
+                    PrecoUnitario = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EncomendaId = table.Column<int>(type: "int", nullable: false),
+                    ProdutoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItensCarrinho", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pagamentos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MetodoPagamento = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Montante = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DataPagamento = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EstadoPagamento = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EncomendaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pagamentos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Produtos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrecoBase = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecoFinal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    EstadoProduto = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Tipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    URLImagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoriaId = table.Column<int>(type: "int", nullable: false),
+                    SubcategoriaId = table.Column<int>(type: "int", nullable: false),
+                    Imagem = table.Column<byte[]>(type: "varbinary(max)", maxLength: 5242880, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Produtos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubCategorias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    CategoriaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubCategorias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -213,6 +322,24 @@ namespace MYCOLL.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Categorias");
+
+            migrationBuilder.DropTable(
+                name: "Encomendas");
+
+            migrationBuilder.DropTable(
+                name: "ItensCarrinho");
+
+            migrationBuilder.DropTable(
+                name: "Pagamentos");
+
+            migrationBuilder.DropTable(
+                name: "Produtos");
+
+            migrationBuilder.DropTable(
+                name: "SubCategorias");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

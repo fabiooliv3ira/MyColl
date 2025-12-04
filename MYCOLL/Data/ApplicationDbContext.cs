@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MYCOLL.Entities;
-using MYCOLL.Entities.Users;
 
 namespace MYCOLL.Data // Define os mapeamentos das classes c# para a base de dados
 {
@@ -15,11 +14,6 @@ namespace MYCOLL.Data // Define os mapeamentos das classes c# para a base de dad
 		// Orders / cart
 		public DbSet<Encomenda> Encomendas { get; set; }
 		public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
-
-		// Users / actors
-		public DbSet<Fornecedor> Fornecedores { get; set; }
-		public DbSet<Funcionario> Funcionarios { get; set; }
-		public DbSet<Utilizador> Utilizadores { get; set; }
 
 		// Payments
 		public DbSet<Pagamento> Pagamentos { get; set; }

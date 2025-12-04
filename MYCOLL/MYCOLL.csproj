@@ -10,8 +10,6 @@
   <ItemGroup>
     <Compile Remove="Entities\Fornecedor.cs" />
     <Compile Remove="Entities\ModoEntrega.cs" />
-    <Compile Remove="Entities\Users\Anonimo.cs" />
-    <Compile Remove="Entities\Users\Cliente.cs" />
     <Compile Remove="Entities\Utilizador.cs" />
   </ItemGroup>
 

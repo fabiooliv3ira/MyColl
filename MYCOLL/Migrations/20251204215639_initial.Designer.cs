@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MYCOLL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251201182217_InicialV7")]
-    partial class InicialV7
+    [Migration("20251204215639_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -142,9 +142,6 @@ namespace MYCOLL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ClienteIdId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
@@ -152,23 +149,10 @@ namespace MYCOLL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FuncionarioIdId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdCliente")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdFuncionario")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClienteIdId");
-
-                    b.HasIndex("FuncionarioIdId");
 
                     b.ToTable("Encomendas");
                 });
@@ -198,11 +182,37 @@ namespace MYCOLL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EncomendaId");
-
-                    b.HasIndex("ProdutoId");
-
                     b.ToTable("ItensCarrinho");
+                });
+
+            modelBuilder.Entity("MYCOLL.Entities.Pagamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataPagamento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EncomendaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EstadoPagamento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetodoPagamento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Montante")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pagamentos");
                 });
 
             modelBuilder.Entity("MYCOLL.Entities.Produto", b =>
@@ -223,8 +233,9 @@ namespace MYCOLL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FornecedorId")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("Imagem")
+                        .HasMaxLength(5242880)
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -252,12 +263,6 @@ namespace MYCOLL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId");
-
-                    b.HasIndex("FornecedorId");
-
-                    b.HasIndex("SubcategoriaId");
-
                     b.ToTable("Produtos");
                 });
 
@@ -281,124 +286,7 @@ namespace MYCOLL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId");
-
                     b.ToTable("SubCategorias");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Users.Fornecedor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NomeEmpresa")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Fornecedores");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Users.Funcionario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Funcionarios");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Users.Pagamento", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DataPagamento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EncomendaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EstadoPagamento")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EncomendaId")
-                        .IsUnique();
-
-                    b.ToTable("Pagamentos");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Utilizador", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Morada")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Telefone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Utilizadores");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -534,89 +422,6 @@ namespace MYCOLL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MYCOLL.Entities.Encomenda", b =>
-                {
-                    b.HasOne("MYCOLL.Entities.Utilizador", "ClienteId")
-                        .WithMany("Encomendas")
-                        .HasForeignKey("ClienteIdId");
-
-                    b.HasOne("MYCOLL.Entities.Users.Funcionario", "FuncionarioId")
-                        .WithMany("EncomendasProcessadas")
-                        .HasForeignKey("FuncionarioIdId");
-
-                    b.Navigation("ClienteId");
-
-                    b.Navigation("FuncionarioId");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.ItemCarrinho", b =>
-                {
-                    b.HasOne("MYCOLL.Entities.Encomenda", "Encomenda")
-                        .WithMany("Itens")
-                        .HasForeignKey("EncomendaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MYCOLL.Entities.Produto", "Produto")
-                        .WithMany()
-                        .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Encomenda");
-
-                    b.Navigation("Produto");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Produto", b =>
-                {
-                    b.HasOne("MYCOLL.Entities.Categoria", "Categoria")
-                        .WithMany("Produtos")
-                        .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MYCOLL.Entities.Users.Fornecedor", "Fornecedor")
-                        .WithMany("Produtos")
-                        .HasForeignKey("FornecedorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MYCOLL.Entities.SubCategoria", "SubCategoria")
-                        .WithMany("Produtos")
-                        .HasForeignKey("SubcategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Categoria");
-
-                    b.Navigation("Fornecedor");
-
-                    b.Navigation("SubCategoria");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.SubCategoria", b =>
-                {
-                    b.HasOne("MYCOLL.Entities.Categoria", "Categoria")
-                        .WithMany("Subcategorias")
-                        .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Categoria");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Users.Pagamento", b =>
-                {
-                    b.HasOne("MYCOLL.Entities.Encomenda", "Encomenda")
-                        .WithOne("Pagamento")
-                        .HasForeignKey("MYCOLL.Entities.Users.Pagamento", "EncomendaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Encomenda");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -666,40 +471,6 @@ namespace MYCOLL.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Categoria", b =>
-                {
-                    b.Navigation("Produtos");
-
-                    b.Navigation("Subcategorias");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Encomenda", b =>
-                {
-                    b.Navigation("Itens");
-
-                    b.Navigation("Pagamento");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.SubCategoria", b =>
-                {
-                    b.Navigation("Produtos");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Users.Fornecedor", b =>
-                {
-                    b.Navigation("Produtos");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Users.Funcionario", b =>
-                {
-                    b.Navigation("EncomendasProcessadas");
-                });
-
-            modelBuilder.Entity("MYCOLL.Entities.Utilizador", b =>
-                {
-                    b.Navigation("Encomendas");
                 });
 #pragma warning restore 612, 618
         }

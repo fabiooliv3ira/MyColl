@@ -1,0 +1,220 @@
+﻿@page "/admin/roles"
+
+@using Microsoft.AspNetCore.Identity
+@using GestaoLoja.Data
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+
+<PageTitle>Gestão de Roles</PageTitle>
+
+<h3>Gestão de Roles</h3>
+
+<!-- Lista de Roles que existam-->
+<h4>Lista:</h4>
+@if (roles == null)
+{
+    <p>A carregar Roles...</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var role in roles)
+        {
+            <div class="col-8">
+                @role.Name
+            </div>
+            <div class="col-4">
+                <button class="btn btn-link p-0 me-2" @onclick="() => AbrirModalEditar(role)" title="Editar">
+                    <i class="bi bi-pencil-square" style="color: #FFC107; font-size: 1.5rem;"></i>
+                </button>
+                <button class="btn btn-link p-0" @onclick="() => AbrirModalConfirmarDelecao(role)" title="Eliminar">
+                    <i class="bi bi-trash3-fill" style="color: #DC3545; font-size: 1.5rem;"></i>
+                </button>
+            </div>
+        }
+    </div>
+}
+
+
+<!-- Formulario de criar roles-->
+<div class=" row card mt-4">
+    <div class="card-header">Nova Role</div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label for="nomeDaRole" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nomeDaRole"
+                   @bind="newRole"
+                   placeholder="Escreva o nome da nova Role">
+        </div>
+        <div class="mb-3">
+            <input type="button" class="btn btn-info" @onclick="CriarRole" value="Criar" />
+        </div>
+        @if (!string.IsNullOrEmpty(messagem))
+        {
+            <div>
+                @messagem
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal de Edição -->
+@if (mostrarModalEditar)
+{
+    <div class="modal d-block" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Role</h5>
+                    <button type="button" class="btn-close" @onclick="FecharModalEditar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nomeRoleEditada" class="form-label">Nome da Role</label>
+                        <input type="text" class="form-control" id="nomeRoleEditada"
+                               @bind="roleEditada.Name"
+                               placeholder="Nome da Role">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="FecharModalEditar">Cancelar</button>
+                    <button type="button" class="btn btn-primary" @onclick="GuardarAlteracoes">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal de Confirmação de Delecção -->
+@if (mostrarModalConfirmarDelecao)
+{
+    <div class="modal d-block" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Delecção</h5>
+                    <button type="button" class="btn-close" @onclick="FecharModalConfirmarDelecao"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem a certeza de que deseja eliminar a role <strong>@roleParaDeletar?.Name</strong>?</p>
+                    <p class="text-muted">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="FecharModalConfirmarDelecao">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeletarRole">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    string newRole = string.Empty;
+    string messagem = string.Empty;
+
+    List<IdentityRole>? roles;
+    bool mostrarModalEditar = false;
+    IdentityRole? roleEditada;
+    bool mostrarModalConfirmarDelecao = false;
+    IdentityRole? roleParaDeletar;
+
+    protected async Task CarregarDados()
+    {
+        roles = RoleManager.Roles.ToList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        await CarregarDados();
+    }
+
+    protected async Task CriarRole()
+    {
+        if (!string.IsNullOrEmpty(newRole))
+        {
+            if (!await RoleManager.RoleExistsAsync(newRole))
+            {
+                var role = new IdentityRole(newRole);
+                await RoleManager.CreateAsync(role);
+                await CarregarDados();
+                messagem = $"Role {newRole} criada com sucesso!";
+            }
+            else
+            {
+                messagem = $"Role {newRole} já existe!";
+            }
+        }
+        else
+        {
+            messagem = "Por favor, insira algum texto.";
+        }
+    }
+
+    protected void AbrirModalEditar(IdentityRole role)
+    {
+        roleEditada = new IdentityRole { Id = role.Id, Name = role.Name };
+        mostrarModalEditar = true;
+    }
+
+    protected void FecharModalEditar()
+    {
+        mostrarModalEditar = false;
+        roleEditada = null;
+    }
+
+    protected async Task GuardarAlteracoes()
+    {
+        if (roleEditada != null && !string.IsNullOrEmpty(roleEditada.Name))
+        {
+            var roleExistente = await RoleManager.FindByIdAsync(roleEditada.Id);
+
+            if (roleExistente != null)
+            {
+                roleExistente.Name = roleEditada.Name;
+                await RoleManager.UpdateAsync(roleExistente);
+                await CarregarDados();
+                messagem = "Role atualizada com sucesso!";
+                FecharModalEditar();
+            }
+        }
+        else
+        {
+            messagem = "Por favor, insira um nome válido.";
+        }
+    }
+
+    protected void AbrirModalConfirmarDelecao(IdentityRole role)
+    {
+        roleParaDeletar = role;
+        mostrarModalConfirmarDelecao = true;
+    }
+
+    protected void FecharModalConfirmarDelecao()
+    {
+        mostrarModalConfirmarDelecao = false;
+        roleParaDeletar = null;
+    }
+
+    protected async Task DeletarRole()
+    {
+        if (roleParaDeletar != null)
+        {
+            var resultado = await RoleManager.DeleteAsync(roleParaDeletar);
+
+            if (resultado.Succeeded)
+            {
+                await CarregarDados();
+                messagem = $"Role {roleParaDeletar.Name} eliminada com sucesso!";
+            }
+            else
+            {
+                messagem = $"Erro ao eliminar a role: {string.Join(", ", resultado.Errors.Select(e => e.Description))}";
+            }
+
+            FecharModalConfirmarDelecao();
+        }
+    }
+}

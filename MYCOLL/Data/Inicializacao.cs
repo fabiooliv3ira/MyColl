@@ -10,7 +10,7 @@ namespace MYCOLL.Data
             RoleManager<IdentityRole> roleManager)
         {
             // Adicionar default Roles
-            String[] roles = { TipoUtilizador.anonimo, TipoUtilizador.fornecedor, TipoUtilizador.cliente };
+            String[] roles = {TipoUtilizador.admin, TipoUtilizador.fornecedor, TipoUtilizador.cliente, TipoUtilizador.funcionario };
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
