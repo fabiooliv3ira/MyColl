@@ -1,0 +1,48 @@
+﻿@page "/subcategoria/details"
+@using Microsoft.EntityFrameworkCore
+@using MYCOLL.Entities
+@inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>SubCategoria</h2>
+    <hr />
+    @if (subcategoria is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Nome</dt>
+            <dd class="col-sm-10">@subcategoria.Nome</dd>
+            <dt class="col-sm-2">Ativo</dt>
+            <dd class="col-sm-10">@subcategoria.Ativo</dd>
+        </dl>
+        <div>
+            <a href="@($"/subcategoria/edit?id={subcategoria.Id}")">Edit</a> |
+            <a href="@($"/subcategoria")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private SubCategoria? subcategoria;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        subcategoria = await context.SubCategorias.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (subcategoria is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

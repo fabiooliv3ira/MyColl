@@ -1,0 +1,37 @@
+﻿@page "/subcategoria"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using MYCOLL.Entities
+@using MYCOLL.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="subcategoria/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.SubCategorias">
+    <PropertyColumn Property="subcategoria => subcategoria.Nome" />
+    <PropertyColumn Property="subcategoria => subcategoria.Ativo" />
+
+    <TemplateColumn Context="subcategoria">
+        <a href="@($"subcategoria/edit?id={subcategoria.Id}")">Edit</a> |
+        <a href="@($"subcategoria/details?id={subcategoria.Id}")">Details</a> |
+        <a href="@($"subcategoria/delete?id={subcategoria.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private ApplicationDbContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

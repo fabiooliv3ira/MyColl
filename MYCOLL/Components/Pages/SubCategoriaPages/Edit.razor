@@ -1,0 +1,94 @@
+﻿@page "/subcategoria/edit"
+@using Microsoft.EntityFrameworkCore
+@using MYCOLL.Entities
+@inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>SubCategoria</h2>
+<hr />
+@if (SubCategoria is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="SubCategoria" OnValidSubmit="UpdateSubCategoria" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="SubCategoria.Id" value="@SubCategoria.Id" />
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <InputText id="nome" @bind-Value="SubCategoria.Nome" class="form-control" />
+                    <ValidationMessage For="() => SubCategoria.Nome" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="ativo" class="form-label">Ativo:</label>
+                    <InputCheckbox id="ativo" @bind-Value="SubCategoria.Ativo" class="form-check-input" />
+                    <ValidationMessage For="() => SubCategoria.Ativo" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/subcategoria">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private SubCategoria? SubCategoria { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        SubCategoria ??= await context.SubCategorias.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (SubCategoria is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateSubCategoria()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(SubCategoria!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!SubCategoriaExists(SubCategoria!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/subcategoria");
+    }
+
+    private bool SubCategoriaExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.SubCategorias.Any(e => e.Id == id);
+    }
+}

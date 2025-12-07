@@ -12,8 +12,7 @@ namespace MYCOLL.Entities
         [Required(ErrorMessage = "Mete nome nisso senão não deixo!")]
         public string Nome { get; set; } = null!;
 		public string? Descricao { get; set; }
-		public decimal PrecoBase { get; set; }
-		public decimal PrecoFinal { get; set; }
+		public decimal Preco { get; set; }
 		public int Stock { get; set; }
 		public string EstadoProduto { get; set; } = null!; // e.g. "Ativo", "Pendente", "Inativo"
 		public string Tipo { get; set; } = null!; // e.g. "Venda", "Listagem"
@@ -21,8 +20,8 @@ namespace MYCOLL.Entities
 		public string URLImagem { get; set; } = null!;
 
 		// FKs
-		public int CategoriaId { get; set; }
-		public int SubcategoriaId { get; set; }
+        public int SubcategoriaId { get; set; }
+		public SubCategoria? SubCategoria { get; set; }
 
         [MaxLength(5242880)]
         public byte[]? Imagem { get; set; }

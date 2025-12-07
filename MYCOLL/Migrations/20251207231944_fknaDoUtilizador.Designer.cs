@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MYCOLL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251204215639_initial")]
-    partial class initial
+    [Migration("20251207231944_fknaDoUtilizador")]
+    partial class fknaDoUtilizador
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,6 +149,10 @@ namespace MYCOLL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");
 
@@ -181,6 +185,10 @@ namespace MYCOLL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EncomendaId");
+
+                    b.HasIndex("ProdutoId");
 
                     b.ToTable("ItensCarrinho");
                 });
@@ -223,9 +231,6 @@ namespace MYCOLL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Descricao")
                         .HasColumnType("nvarchar(max)");
 
@@ -241,10 +246,7 @@ namespace MYCOLL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PrecoBase")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("PrecoFinal")
+                    b.Property<decimal>("Preco")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Stock")
@@ -263,6 +265,8 @@ namespace MYCOLL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SubcategoriaId");
+
                     b.ToTable("Produtos");
                 });
 
@@ -276,9 +280,6 @@ namespace MYCOLL.Migrations
 
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
-
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -420,6 +421,36 @@ namespace MYCOLL.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("MYCOLL.Entities.ItemCarrinho", b =>
+                {
+                    b.HasOne("MYCOLL.Entities.Encomenda", "Encomenda")
+                        .WithMany()
+                        .HasForeignKey("EncomendaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MYCOLL.Entities.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Encomenda");
+
+                    b.Navigation("Produto");
+                });
+
+            modelBuilder.Entity("MYCOLL.Entities.Produto", b =>
+                {
+                    b.HasOne("MYCOLL.Entities.SubCategoria", "SubCategoria")
+                        .WithMany()
+                        .HasForeignKey("SubcategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubCategoria");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
