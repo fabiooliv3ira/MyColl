@@ -1,0 +1,16 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+
+namespace RESTfulAPIMYCOLL.Entities
+{
+	public class Categoria
+	{
+		public int Id { get; set; }
+		public string Nome { get; set; } = null!;
+		public bool Ativo { get; set; }
+		List<SubCategoria>? SubCategorias { get; set; }
+
+    }
+}

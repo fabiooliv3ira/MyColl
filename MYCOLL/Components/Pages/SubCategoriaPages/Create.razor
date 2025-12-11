@@ -25,6 +25,17 @@
                 <InputCheckbox id="ativo" @bind-Value="SubCategoria.Ativo" class="form-check-input" /> 
                 <ValidationMessage For="() => SubCategoria.Ativo" class="text-danger" /> 
             </div>        
+            <div class="mb-3">
+                <label for="categoriaid" class="form-label">Categoria:</label>
+                <InputSelect id="categoriaid" class="form-select" @bind-Value="@SubCategoria.CategoriaId">
+                    <option value="-1">Escolha uma Categoria</option>
+                    @foreach (var item in selCategorias)
+                    {
+                        <option value="@item.Id">@item.Nome</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => SubCategoria.CategoriaId" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -37,8 +48,13 @@
 @code {
     [SupplyParameterFromForm]
     private SubCategoria SubCategoria { get; set; } = new();
+    List<Categoria> selCategorias = new();
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        selCategorias = await context.Categorias.ToListAsync();       
+    }
     private async Task AddSubCategoria()
     {
         using var context = DbFactory.CreateDbContext();

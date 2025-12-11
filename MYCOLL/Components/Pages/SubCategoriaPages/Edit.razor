@@ -32,6 +32,11 @@ else
                     <InputCheckbox id="ativo" @bind-Value="SubCategoria.Ativo" class="form-check-input" />
                     <ValidationMessage For="() => SubCategoria.Ativo" class="text-danger" />
                 </div>
+                <div class="mb-3">
+                    <label for="categoriaid" class="form-label">CategoriaId:</label>
+                    <InputNumber id="categoriaid" @bind-Value="SubCategoria.CategoriaId" class="form-control" />
+                    <ValidationMessage For="() => SubCategoria.CategoriaId" class="text-danger" />
+                </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
         </div>

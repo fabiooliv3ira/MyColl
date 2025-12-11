@@ -278,11 +278,16 @@ namespace MYCOLL.Migrations
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
 
+                    b.Property<int>("CategoriaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoriaId");
 
                     b.ToTable("SubCategorias");
                 });
@@ -448,6 +453,17 @@ namespace MYCOLL.Migrations
                         .IsRequired();
 
                     b.Navigation("SubCategoria");
+                });
+
+            modelBuilder.Entity("MYCOLL.Entities.SubCategoria", b =>
+                {
+                    b.HasOne("MYCOLL.Entities.Categoria", "categoria")
+                        .WithMany()
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("categoria");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

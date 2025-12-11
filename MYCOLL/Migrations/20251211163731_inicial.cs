@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MYCOLL.Migrations
 {
     /// <inheritdoc />
-    public partial class fknaDoUtilizador : Migration
+    public partial class inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -103,20 +103,6 @@ namespace MYCOLL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pagamentos", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubCategorias",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubCategorias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,6 +207,27 @@ namespace MYCOLL.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubCategorias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    CategoriaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubCategorias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SubCategorias_Categorias_CategoriaId",
+                        column: x => x.CategoriaId,
+                        principalTable: "Categorias",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -334,6 +341,11 @@ namespace MYCOLL.Migrations
                 name: "IX_Produtos_SubcategoriaId",
                 table: "Produtos",
                 column: "SubcategoriaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubCategorias_CategoriaId",
+                table: "SubCategorias",
+                column: "CategoriaId");
         }
 
         /// <inheritdoc />
@@ -355,9 +367,6 @@ namespace MYCOLL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categorias");
-
-            migrationBuilder.DropTable(
                 name: "ItensCarrinho");
 
             migrationBuilder.DropTable(
@@ -377,6 +386,9 @@ namespace MYCOLL.Migrations
 
             migrationBuilder.DropTable(
                 name: "SubCategorias");
+
+            migrationBuilder.DropTable(
+                name: "Categorias");
         }
     }
 }

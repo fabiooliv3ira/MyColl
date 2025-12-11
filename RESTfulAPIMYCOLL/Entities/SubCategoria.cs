@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MYCOLL.Entities
+namespace RESTfulAPIMYCOLL.Entities
 {
 	public class SubCategoria
 	{

@@ -17,6 +17,7 @@
 <QuickGrid Class="table" Items="context.SubCategorias">
     <PropertyColumn Property="subcategoria => subcategoria.Nome" />
     <PropertyColumn Property="subcategoria => subcategoria.Ativo" />
+    <PropertyColumn Property="subcategoria => subcategoria.CategoriaId" />
 
     <TemplateColumn Context="subcategoria">
         <a href="@($"subcategoria/edit?id={subcategoria.Id}")">Edit</a> |
