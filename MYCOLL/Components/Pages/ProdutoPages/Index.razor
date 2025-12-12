@@ -1,10 +1,16 @@
 ﻿@page "/produtos"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using MYCOLL.Entities
 @using MYCOLL.Data
 @implements IAsyncDisposable
-@inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@attribute [Authorize(Roles = "Admin, Funcionario, Fornecedor")]
 
 <PageTitle>Index</PageTitle>
 
@@ -14,30 +20,66 @@
     <a href="produtos/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="context.Produtos">
-    <PropertyColumn Property="produto => produto.Nome" />
-    <PropertyColumn Property="produto => produto.Descricao" />
-    <PropertyColumn Property="produto => produto.Preco" />
-    <PropertyColumn Property="produto => produto.Stock" />
-    <PropertyColumn Property="produto => produto.EstadoProduto" />
-    <PropertyColumn Property="produto => produto.Tipo" />
-    <PropertyColumn Property="produto => produto.URLImagem" />
-    <PropertyColumn Property="produto => produto.SubcategoriaId" />
-    <PropertyColumn Property="produto => produto.Imagem" />
+@if (produtos == null)
+{
+    <p>A carregar...</p>
+}
+else
+{
+    <QuickGrid TGridItem="Produto" Class="table" Items="produtos.AsQueryable()">
+        <PropertyColumn Property="produto => produto.Nome" />
+        <PropertyColumn Property="produto => produto.Descricao" />
+        <PropertyColumn Property="produto => produto.Preco" />
+        <PropertyColumn Property="produto => produto.Stock" />
+        <PropertyColumn Property="produto => produto.EstadoProduto" />
+        <PropertyColumn Property="produto => produto.Tipo" />
+        <PropertyColumn Property="produto => produto.URLImagem" />
+        <PropertyColumn Property="produto => produto.SubcategoriaId" />
+        <PropertyColumn Property="produto => produto.Imagem" />
 
-    <TemplateColumn Context="produto">
-        <a href="@($"produtos/edit?id={produto.Id}")">Edit</a> |
-        <a href="@($"produtos/details?id={produto.Id}")">Details</a> |
-        <a href="@($"produtos/delete?id={produto.Id}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+        <TemplateColumn Context="produto">
+            <a href="@($"produtos/edit?id={produto.Id}")">Edit</a> |
+            <a href="@($"produtos/details?id={produto.Id}")">Details</a> |
+            <a href="@($"produtos/delete?id={produto.Id}")">Delete</a>
+        </TemplateColumn>
+    </QuickGrid>
+}
 
 @code {
     private ApplicationDbContext context = default!;
+    private string? currentUserId;
+    private List<Produto> produtos = null!;
+    private Boolean isFuncionario;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var email = user.Identity?.Name;
+        if (email != null)
+        {
+            var currentUser = await UserManager.FindByEmailAsync(email);
+            currentUserId = currentUser!.Id;
+            var roles = await UserManager.GetRolesAsync(currentUser);
+            isFuncionario = roles.Contains(TipoUtilizador.funcionario) || roles.Contains(TipoUtilizador.admin);
+        }
+
         context = DbFactory.CreateDbContext();
+
+        if (isFuncionario)
+        {
+			produtos = await context.Produtos.ToListAsync();
+        }
+        else
+        {
+            produtos = await context.Produtos
+           .Where(p => p.ApplicationUserId == currentUserId)
+           .ToListAsync();
+        }
+       
+
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

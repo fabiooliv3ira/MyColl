@@ -9,7 +9,7 @@
             <div class="d-flex w-100">
                 <!-- Left-aligned section -->
                 <div class="d-flex justify-content-center flex-grow-1">
-                    <AuthorizeView Roles=@($"{TipoUtilizador.admin}, {TipoUtilizador.funcionario}")>
+                    <AuthorizeView>
                         <Authorized>
                             <div class="nav-item px-3">
                                 <NavLink class="nav-link" href="categoria">

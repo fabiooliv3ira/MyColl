@@ -1,117 +1,361 @@
 ﻿@page "/admin/users"
+@rendermode InteractiveServer
 
 @using Microsoft.AspNetCore.Identity
 @using MYCOLL.Data
+@using Microsoft.AspNetCore.Components.Authorization
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Gestão de Utilizadores</PageTitle>
 
 <h3>Gestão de Utilizadores</h3>
+<hr />
 
-@if (users == null)
+@if (isLoading)
 {
-    <p>A carregar utilizadores...</p>
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">A carregar utilizadores...</span>
+        </div>
+    </div>
 }
 else
 {
-    <div class="row bg-dark text-white">
-        <div class="col-2">
-            Username
-        </div>
-        <div class="col-2">Nome</div>
-        <div class="col-2">Apelido</div>
-        <div class="col-1">NIF</div>
-        <div class="col-4">Roles</div>
-    </div>
-    @foreach (var user in users)
+    @if (!string.IsNullOrEmpty(mensagem))
     {
-        <div class="row border-bottom py-2">
-            <div class="col-2">@user.Email</div>
-            <div class="col-2">@user.Nome</div>
-            <div class="col-2">@user.Apelido</div>
-            <div class="col-1">@user.NIF</div>
-            <div class="col-4">
-                @if (userWithRoles.ContainsKey(user.Id))
-                {
-                    @foreach (var role in userWithRoles[user.Id])
-                    {
-                        <span class="badge bg-info">
-                            @role
-                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user, role)" style="margin-left: 5px; padding: 2px 6px;">x</button>
-                        </span>
-                       
-                    }
-                }
-                else
-                {
-                    <span class="text-muted">Sem roles</span>
-                }
+        <div class="alert @(mensagemErro ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+            @mensagem
+            <button type="button" class="btn-close" @onclick="() => mensagem = null"></button>
+        </div>
+    }
 
-                @if (roles != null && roles.Count > 0)
-                {
-                    <div class="mt-2">
-                        <select class="form-select form-select-sm" @onchange="(ChangeEventArgs e) => HandleRoleSelection(user, e)" style="max-width: 150px; display: inline-block;">
-                            <option value="">Adicionar Role...</option>
-                            @foreach (var role in roles)
-                            {
-                                @if (!userWithRoles[user.Id].Contains(role.Name!))
+    @if (users == null || users.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">
+            Não existem utilizadores registados.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Email</th>
+                        <th>Nome</th>
+                        <th>NIF</th>
+                        <th>Ativo</th>
+                        <th>Data Registo</th>
+                        <th>Roles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        var podeModificar = PodeModificarUtilizador(user);
+                        
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.Nome</td>
+                            <td>@(string.IsNullOrEmpty(user.NIF) ? "-" : user.NIF)</td>
+                            <td>
+                                @if (user.IsActive)
                                 {
-                                    <option value="@role.Name">@role.Name</option>
-                                 }    
-                            }
-                        </select>
-                    </div>
-                }
-            </div>
+                                    <button class="btn btn-sm btn-success" 
+                                            @onclick="() => AlternarEstado(user)" 
+                                            disabled="@(!podeModificar)"
+                                            title="@(podeModificar ? "Clique para Desativar" : "Não pode modificar este utilizador")">
+                                        Ativo <i class="bi bi-check-circle"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-warning" 
+                                            @onclick="() => AlternarEstado(user)" 
+                                            disabled="@(!podeModificar)"
+                                            title="@(podeModificar ? "Clique para Aprovar/Ativar" : "Não pode modificar este utilizador")">
+                                        Pendente <i class="bi bi-hourglass-split"></i>
+                                    </button>
+                                }
+                            </td>
+                            <td>@user.DataRegisto.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <div class="mb-2">
+                                    @if (userWithRoles.ContainsKey(user.Id) && userWithRoles[user.Id].Any())
+                                    {
+                                        @foreach (var role in userWithRoles[user.Id])
+                                        {
+                                            <span class="badge bg-primary me-1 mb-1">
+                                                @role
+                                                @if (podeModificar)
+                                                {
+                                                    <button type="button" class="btn-close btn-close-white ms-1" 
+                                                            style="font-size: 0.6rem;" 
+                                                            @onclick="() => RemoveRole(user, role)"
+                                                            title="Remover role">
+                                                    </button>
+                                                }
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sem roles</span>
+                                    }
+                                </div>
+
+                                @if (podeModificar && roles != null && roles.Count > 0 && userWithRoles.ContainsKey(user.Id))
+                                {
+                                    var availableRoles = roles.Where(r => !userWithRoles[user.Id].Contains(r.Name!)).ToList();
+                                    
+                                    @if (availableRoles.Any())
+                                    {
+                                        <div class="input-group input-group-sm" style="max-width: 250px;">
+                                            <select class="form-select" @onchange="(e) => HandleRoleSelection(user, e)">
+                                                <option value="">-- Adicionar Role --</option>
+                                                @foreach (var role in availableRoles)
+                                                {
+                                                    <option value="@role.Name">@role.Name</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">Todos os roles atribuídos</small>
+                                    }
+                                }
+                                else if (!podeModificar)
+                                {
+                                    <small class="text-muted">
+                                        <i class="bi bi-lock"></i> Sem permissão para modificar
+                                    </small>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     }
 }
 
 @code {
-
     private List<ApplicationUser>? users;
     private List<IdentityRole>? roles;
-
     private Dictionary<string, List<string>> userWithRoles = new();
-
-
+    private bool isLoading = true;
+    private string? mensagem;
+    private bool mensagemErro = false;
+    
+    // Dados do utilizador logado
+    private string? currentUserId;
+    private bool isCurrentUserAdmin = false;
 
     protected async Task CarregarDados()
     {
-        users = UserManager.Users.ToList();
-        userWithRoles.Clear();
-
-        foreach (var user in users)
+        isLoading = true;
+        
+        try
         {
-            var userRoles = await UserManager.GetRolesAsync(user);
-            userWithRoles[user.Id] = userRoles.ToList();
-        }
+            users = UserManager.Users.OrderBy(u => u.Nome).ToList();
+            userWithRoles.Clear();
 
-        roles = RoleManager.Roles.ToList();
+            foreach (var user in users)
+            {
+                var userRoles = await UserManager.GetRolesAsync(user);
+                userWithRoles[user.Id] = userRoles.ToList();
+            }
+
+            roles = RoleManager.Roles.OrderBy(r => r.Name).ToList();
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Erro ao carregar dados: {ex.Message}";
+            mensagemErro = true;
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        // Obter informação do utilizador logado
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            // Obter o ID do utilizador logado
+            var emailClaim = user.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Email 
+                                                || c.Type == System.Security.Claims.ClaimTypes.Name);
+            
+            if (emailClaim != null)
+            {
+                var currentUser = await UserManager.FindByEmailAsync(emailClaim.Value);
+                if (currentUser != null)
+                {
+                    currentUserId = currentUser.Id;
+                    isCurrentUserAdmin = user.IsInRole("Administrador");
+                    
+                    Console.WriteLine($"✅ Utilizador logado: {currentUser.Email} (ID: {currentUserId})");
+                    Console.WriteLine($"✅ É Admin: {isCurrentUserAdmin}");
+                }
+            }
+        }
+        
         await CarregarDados();
+    }
+
+    // Verifica se o utilizador logado pode modificar o utilizador alvo
+    private bool PodeModificarUtilizador(ApplicationUser targetUser)
+    {
+        // Não pode modificar a si próprio
+        if (targetUser.Id == currentUserId)
+        {
+            return false;
+        }
+        
+        // Se o utilizador logado é Admin, pode modificar todos (exceto a si próprio)
+        if (isCurrentUserAdmin)
+        {
+            return true;
+        }
+        
+        // Se o utilizador logado é Funcionário
+        // Verifica se o alvo é Admin
+        if (userWithRoles.ContainsKey(targetUser.Id) && 
+            userWithRoles[targetUser.Id].Contains("Administrador"))
+        {
+            // Funcionário não pode modificar Administradores
+            return false;
+        }
+        
+        // Funcionário pode modificar Clientes e Fornecedores
+        return true;
     }
 
     private async Task RemoveRole(ApplicationUser user, string role)
     {
-        await UserManager.RemoveFromRoleAsync(user, role);
-        await CarregarDados();
+        // Verificação de permissões
+        if (!PodeModificarUtilizador(user))
+        {
+            mensagem = "Não tem permissão para modificar este utilizador.";
+            mensagemErro = true;
+            return;
+        }
+
+        mensagem = string.Empty;
+        mensagemErro = false;
+
+        try
+        {
+            var result = await UserManager.RemoveFromRoleAsync(user, role);
+            
+            if (result.Succeeded)
+            {
+                mensagem = $"Role '{role}' removido com sucesso do utilizador {user.Nome}.";
+                mensagemErro = false;
+                await CarregarDados();
+            }
+            else
+            {
+                mensagem = $"Erro ao remover role: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+                mensagemErro = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Erro ao remover role: {ex.Message}";
+            mensagemErro = true;
+        }
     }
 
     private async Task HandleRoleSelection(ApplicationUser user, ChangeEventArgs e)
     {
+        // Verificação de permissões
+        if (!PodeModificarUtilizador(user))
+        {
+            mensagem = "Não tem permissão para modificar este utilizador.";
+            mensagemErro = true;
+            return;
+        }
+
+        mensagem = string.Empty;
+        mensagemErro = false;
+
         string? selectedRole = e.Value?.ToString();
 
-        if (!string.IsNullOrEmpty(selectedRole))
+        if (string.IsNullOrEmpty(selectedRole))
         {
-            await UserManager.AddToRoleAsync(user, selectedRole);
-            await CarregarDados();
+            return;
+        }
+
+        try
+        {
+            var result = await UserManager.AddToRoleAsync(user, selectedRole);
+            
+            if (result.Succeeded)
+            {
+                mensagem = $"Role '{selectedRole}' adicionado com sucesso ao utilizador {user.Nome}.";
+                mensagemErro = false;
+                await CarregarDados();
+            }
+            else
+            {
+                mensagem = $"Erro ao adicionar role: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+                mensagemErro = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Erro ao adicionar role: {ex.Message}";
+            mensagemErro = true;
         }
     }
 
+    private async Task AlternarEstado(ApplicationUser user)
+    {
+        // Verificação de permissões
+        if (!PodeModificarUtilizador(user))
+        {
+            mensagem = "Não pode modificar o seu próprio estado ou não tem permissão para modificar este utilizador.";
+            mensagemErro = true;
+            return;
+        }
+
+        try
+        {
+            // Inverte o estado atual
+            user.IsActive = !user.IsActive;
+
+            // Atualiza na BD usando o UserManager
+            var result = await UserManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                mensagem = $"O estado do utilizador {user.Nome} foi alterado para {(user.IsActive ? "Ativo" : "Inativo")}.";
+                mensagemErro = false;
+            }
+            else
+            {
+                mensagem = "Erro ao atualizar estado.";
+                mensagemErro = true;
+                // Reverte visualmente se falhar
+                user.IsActive = !user.IsActive;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Erro: {ex.Message}";
+            mensagemErro = true;
+        }
+    }
 }

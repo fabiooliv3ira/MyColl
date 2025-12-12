@@ -1,8 +1,12 @@
 ﻿@page "/produtos/edit"
+@using MYCOLL.Data
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using Microsoft.AspNetCore.Identity
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Edit</PageTitle>
 
@@ -23,6 +27,7 @@ else
                 <ValidationSummary role="alert"/>
                 <input type="hidden" name="Produto.Id" value="@Produto.Id" />
                 <div class="mb-3">
+                <span class="text-danger">*</span>
                     <label for="nome" class="form-label">Nome:</label>
                     <InputText id="nome" @bind-Value="Produto.Nome" class="form-control" aria-required="true"/>
                     <ValidationMessage For="() => Produto.Nome" class="text-danger" />
@@ -43,9 +48,14 @@ else
                     <ValidationMessage For="() => Produto.Stock" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="estadoproduto" class="form-label">EstadoProduto:</label>
-                    <InputText id="estadoproduto" @bind-Value="Produto.EstadoProduto" class="form-control" />
+                    <InputSelect id="EstadoProduto" class="form-select" @bind-Value="@Produto.EstadoProduto">
+                        <option value="-1">Escolha o estado</option>
+                        <option value="Inativo">"Inativo"</option>
+                        <option value="Ativo">"Ativo"</option>
+                        <option value="Pendente">"Pendente"</option>
+                    </InputSelect>
                     <ValidationMessage For="() => Produto.EstadoProduto" class="text-danger" />
+
                 </div>
                 <div class="mb-3">
                     <label for="tipo" class="form-label">Tipo:</label>
@@ -58,15 +68,26 @@ else
                     <ValidationMessage For="() => Produto.URLImagem" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="subcategoriaid" class="form-label">SubcategoriaId:</label>
-                    <InputNumber id="subcategoriaid" @bind-Value="Produto.SubcategoriaId" class="form-control" />
+                    <label for="categoriaid" class="form-label">Categoria:</label>
+                    <InputSelect id="categoriaid" class="form-select" @bind-Value="@Produto.SubcategoriaId">
+                        <option value="-1">Escolha uma Categoria</option>
+                        @foreach (var item in selSubCategorias)
+                        {
+                            <option value="@item.Id">@item.Nome</option>
+                        }
+                    </InputSelect>
                     <ValidationMessage For="() => Produto.SubcategoriaId" class="text-danger" />
                 </div>
-                @* <div class="mb-3">
+                <div class="mb-3">
                     <label for="imagem" class="form-label">Imagem:</label>
-                    <InputText id="imagem" @bind-Value="Produto.Imagem" class="form-control" />
+                    <InputFile id="imagem" OnChange="OnImageChange" class="form-control"
+                               accept=".png, .jpg, .jpeg" />
+                    @if (previewUrl is not null)
+                    {
+                        <img src="@previewUrl" style="max-width: 200px; margin-top: 10px" />
+                    }
                     <ValidationMessage For="() => Produto.Imagem" class="text-danger" />
-                </div> *@
+                </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
         </div>
@@ -80,23 +101,13 @@ else
 @code {
     [SupplyParameterFromQuery]
     private int Id { get; set; }
+    List<SubCategoria> selSubCategorias = new();
+    private string? currentUserId;
 
     [SupplyParameterFromForm]
     private Produto? Produto { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        using var context = DbFactory.CreateDbContext();
-        Produto ??= await context.Produtos.FirstOrDefaultAsync(m => m.Id == Id);
-
-        if (Produto is null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
-    }
-
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    
     private async Task UpdateProduto()
     {
         using var context = DbFactory.CreateDbContext();
@@ -119,6 +130,55 @@ else
         }
 
         NavigationManager.NavigateTo("/produtos");
+    }
+
+    private string? previewUrl;
+    private async Task OnImageChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        using var stream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(stream);
+        Produto.Imagem = stream.ToArray();
+
+        // Cria pré-visualização
+        using var previewStream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(previewStream);
+        var base64 = Convert.ToBase64String(previewStream.ToArray());
+        previewUrl = $"data:{file.ContentType};base64,{base64}";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        selSubCategorias = await context.SubCategorias.ToListAsync();
+        // Obter informação do utilizador logado
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Produto ??= await context.Produtos.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Produto is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            // Obter o ID do utilizador logado
+            var emailClaim = user.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Email
+                                                || c.Type == System.Security.Claims.ClaimTypes.Name);
+
+            if (emailClaim != null)
+            {
+                var currentUser = await UserManager.FindByEmailAsync(emailClaim.Value);
+                if (currentUser != null)
+                {
+                    currentUserId = currentUser.Id;
+                    Produto.ApplicationUserId = currentUserId;
+                }
+            }
+
+        }
     }
 
     private bool ProdutoExists(int id)

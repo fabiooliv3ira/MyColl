@@ -25,7 +25,6 @@ namespace MYCOLL.Data
                 UserName = "admin@localhost.com",
                 Email = "admin@localhost.com",
                 Nome = "Administrador",
-                Apelido = "Local",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true
             };

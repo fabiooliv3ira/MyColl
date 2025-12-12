@@ -22,6 +22,8 @@ namespace MYCOLL.Entities
 		// FKs
         public int SubcategoriaId { get; set; }
 		public SubCategoria? SubCategoria { get; set; }
+		
+		public string ApplicationUserId { get; set; } = null!;
 
         [MaxLength(5242880)]
         public byte[]? Imagem { get; set; }

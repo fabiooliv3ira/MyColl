@@ -1,10 +1,13 @@
 ﻿@page "/categoria"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using MYCOLL.Entities
 @using MYCOLL.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
+
+@attribute [Authorize(Roles="Admin, Funcionario")]
 
 <PageTitle>Index</PageTitle>
 
