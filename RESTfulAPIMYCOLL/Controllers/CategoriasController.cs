@@ -9,7 +9,7 @@ using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Entities;
 using RESTfulAPIMYCOLL.Repositories;
 
-namespace RESTfulAPIWeb.Controllers
+namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]

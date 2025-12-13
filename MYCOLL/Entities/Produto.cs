@@ -14,6 +14,7 @@ namespace MYCOLL.Entities
 		public string? Descricao { get; set; }
 		public decimal Preco { get; set; }
 		public int Stock { get; set; }
+		public int NrDeVendas { get; set; }
 		public string EstadoProduto { get; set; } = null!; // e.g. "Ativo", "Pendente", "Inativo"
 		public string Tipo { get; set; } = null!; // e.g. "Venda", "Listagem"
 

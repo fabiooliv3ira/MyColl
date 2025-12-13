@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MYCOLL.Migrations
 {
     /// <inheritdoc />
-    public partial class inicial : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -239,10 +239,12 @@ namespace MYCOLL.Migrations
                     Descricao = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
+                    NrDeVendas = table.Column<int>(type: "int", nullable: false),
                     EstadoProduto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     URLImagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SubcategoriaId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Imagem = table.Column<byte[]>(type: "varbinary(max)", maxLength: 5242880, nullable: true)
                 },
                 constraints: table =>

@@ -4,21 +4,19 @@ namespace RESTfulAPIMYCOLL.Repositories
 {
     public interface IProdutoRepository
     {
-        Task<IEnumerable<Produtos>> ObterProdutosPorCategoriaAsync(int categoriaId);
+        Task<IEnumerable<Produto>> ObterProdutosPorCategoriaAsync(int categoriaId);
 
-        Task<IEnumerable<Produtos>> ObterProdutosPromocaoAsync();
+        Task<IEnumerable<Produto>> ObterProdutosMaisVendidosAsync();
 
-        Task<IEnumerable<Produtos>> ObterProdutosmaisVendidosAsync();
+        Task<Produto> ObterDetalheProdutoAsync(int id);
 
-        Task<Produtos> ObterDetalheProdutoAsync(int id);
-
-        Task<IEnumerable<Produtos>> ObterTodosProdutosAsync();
+        Task<IEnumerable<Produto>> ObterTodosProdutosAsync();
 
         Task<bool> EliminarProdutoAsync(int id);
 
-        Task<Produtos> AdicionarProdutoAsync(Produtos produto);
+        Task<Produto> AdicionarProdutoAsync(Produto produto);
 
-        Task<Produtos> AtualizarProdutoAsync(Produtos produto);
+        Task<Produto> AtualizarProdutoAsync(Produto produto);
 
 
     }

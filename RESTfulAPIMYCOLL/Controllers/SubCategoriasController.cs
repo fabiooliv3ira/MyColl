@@ -1,11 +1,9 @@
-﻿using GestaoMyMedia.Data;
-using GestaoMyMedia.Entity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Entities;
 
-namespace MyMedia.API.Controllers
+namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]

@@ -5,7 +5,7 @@ using RESTfulAPIMYCOLL.Repositories;
 using RESTfulAPIMYCOLL.Entities;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace RESTfulAPIWeb.Controllers
+namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -21,38 +21,33 @@ namespace RESTfulAPIWeb.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IEnumerable<Produtos>> Get()
+		public async Task<IEnumerable<Produto>> Get()
 		{
 			return await _produtoRepository.ObterTodosProdutosAsync();
 		}
 
 		// GET api/<ProdutosController>/5
 		[HttpGet("{id}")]
-		public async Task<Produtos> Get(int id)
+		public async Task<Produto> Get(int id)
 		{
 			return await _produtoRepository.ObterDetalheProdutoAsync(id);
 		}
 
 		[HttpGet("Mais-vendidos")]
-		public async Task<IEnumerable<Produtos>> GetProdutosMaisVendidos()
+		public async Task<IEnumerable<Produto>> GetProdutosMaisVendidos()
 		{
-			return await _produtoRepository.ObterProdutosmaisVendidosAsync();
+			return await _produtoRepository.ObterProdutosMaisVendidosAsync();
 		}
 
-		[HttpGet("promocoes")]
-		public async Task<IEnumerable<Produtos>> GetProdutosEmPromocao()
-		{
-			return await _produtoRepository.ObterProdutosPromocaoAsync();
-		}
 
 		[HttpGet("Por-categoria/{categoriaId}")]
-		public async Task<IEnumerable<Produtos>> GetProdutosPorCategoria(int categoriaId)
+		public async Task<IEnumerable<Produto>> GetProdutosPorCategoria(int categoriaId)
 		{
 			return await _produtoRepository.ObterProdutosPorCategoriaAsync(categoriaId);
 		}
 
 		[HttpPost]
-		public async Task<Produtos> Post([FromBody] Produtos produto)
+		public async Task<Produto> Post([FromBody] Produto produto)
 		{
 			return await _produtoRepository.AdicionarProdutoAsync(produto);
 		}
@@ -60,7 +55,7 @@ namespace RESTfulAPIWeb.Controllers
 		// PUT api/<ProdutosController>/5
 		[Authorize]
 		[HttpPut]
-		public async Task<Produtos> Put([FromBody] Produtos produto)
+		public async Task<Produto> Put([FromBody] Produto produto)
 		{
 			return await _produtoRepository.AtualizarProdutoAsync(produto);
 		}

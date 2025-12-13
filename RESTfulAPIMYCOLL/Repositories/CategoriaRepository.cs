@@ -2,7 +2,7 @@
 using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Entities;
 
-namespace RESTfulAPIWeb.Repositories
+namespace RESTfulAPIMYCOLL.Repositories
 {
 	public class CategoriaRepository : ICategoriaRepository
 	{
@@ -14,10 +14,10 @@ namespace RESTfulAPIWeb.Repositories
 		public async Task<IEnumerable<Categoria>> GetCategorias()
 		{
 			return await dbContext.Categorias
-				.Where(c => c.Imagem != null && c.Imagem.Length > 0)
-				.OrderBy(O => O.Ordem)
-				.ThenBy(p => p.Nome)
+				.Where(c => c.Ativo)
+				.OrderBy(c => c.Nome)
 				.ToListAsync();
 		}
+
 	}
 }

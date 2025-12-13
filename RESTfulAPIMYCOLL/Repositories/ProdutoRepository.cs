@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Repositories;
+using RESTfulAPIMYCOLL.Entities;
+
 
 namespace RESTfulAPIMYCOLL.Repositories
 {
@@ -13,67 +15,54 @@ namespace RESTfulAPIMYCOLL.Repositories
 			_context = context;
 		}
 
-		public Task<Produtos> ObterDetalhePradutoAsync(int id)
+		public Task<Produto> ObterDetalhePradutoAsync(int id)
 		{
 			throw new NotImplementedException();
 		}
 
-		public async Task<Produtos> ObterDetalheProdutoAsync(int id)
-		{
-			var temp = await _context.Produtos
-				.Include(p => p.categoria) // Fixed: Include related category
-				.FirstOrDefaultAsync(p => p.Id == id);
-
-			return temp != null ? temp : new Produtos();
-
-		}
-
-		public async Task<IEnumerable<Produtos>> ObterProdutosMaisVendidosAsync()
+		public async Task<Produto> ObterDetalheProdutoAsync(int id)
 		{
 			return await _context.Produtos
-				.Where(p => p.MaisVendido) // Assuming you have a property to flag best sellers
+				.FirstOrDefaultAsync(p => p.Id == id)
+				?? new Produto();
+		}
+
+
+		public async Task<IEnumerable<Produto>> ObterProdutosMaisVendidosAsync()
+		{
+			return await _context.Produtos
+				.OrderByDescending(p => p.NrDeVendas)
 				.ToListAsync();
 		}
 
-		public Task<IEnumerable<Produtos>> ObterProdutosmaisVendidosAsync()
-		{
-			throw new NotImplementedException();
-		}
 
-		public async Task<IEnumerable<Produtos>> ObterProdutosPorCategoriaAsync(int categoriaId)
+
+		public async Task<IEnumerable<Produto>> ObterProdutosPorCategoriaAsync(int categoriaId)
 		{
 			return await _context.Produtos
-				.Where(p => p.CategoriaId == categoriaId)
-				.Where(x => x.Imagem != null && x.Imagem.Length > 0)
-				.Include("modoentrega")
-				.Include("categoria")
+				.Where(p => p.SubCategoria != null &&
+							p.SubCategoria.CategoriaId == categoriaId)
 				.OrderBy(p => p.Nome)
 				.ToListAsync();
 		}
 
-		public async Task<IEnumerable<Produtos>> ObterProdutosPromocaoAsync()
+
+
+
+		public async Task<IEnumerable<Produto>> ObterTodosProdutosAsync()
 		{
 			return await _context.Produtos
-				.Where(p => p.Promocao)
-				.OrderByDescending(p => p.Preco)
+				.OrderBy(p => p.Id)
 				.ToListAsync();
 		}
 
-		public async Task<IEnumerable<Produtos>> ObterTodosProdutosAsync()
-		{
-			return await _context.Produtos
-				.Include(p => p.categoria)
-				.OrderBy(p => p.Nome)
-				.ToListAsync();
-		}
-
-		public async Task<Produtos> AdicionarProdutoAsync(Produtos produto)
+		public async Task<Produto> AdicionarProdutoAsync(Produto produto)
 		{
 			_context.Produtos.Add(produto);
 			await _context.SaveChangesAsync();
 			return produto;
 		}
-		public async Task<Produtos> AtualizarProdutoAsync(Produtos produto)
+		public async Task<Produto> AtualizarProdutoAsync(Produto produto)
 		{
 			_context.Produtos.Update(produto);
 

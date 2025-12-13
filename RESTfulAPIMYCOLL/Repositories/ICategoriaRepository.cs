@@ -1,6 +1,6 @@
 ﻿using RESTfulAPIMYCOLL.Entities;
 
-namespace RESTfulAPIWeb.Repositories
+namespace RESTfulAPIMYCOLL.Repositories
 {
 	public interface ICategoriaRepository
 	{

@@ -10,5 +10,5 @@ namespace MYCOLL.Entities
 		public int CategoriaId { get; set; }
 		[JsonIgnore]
         public Categoria? categoria { get; set; }
-}
+	}
 }
