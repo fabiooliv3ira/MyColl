@@ -18,6 +18,17 @@ namespace RESTfulAPIMYCOLL.Repositories
 				.OrderBy(c => c.Nome)
 				.ToListAsync();
 		}
+		public async Task<Categoria?> GetCategoriaById(int id)
+		{
+			return await dbContext.Categorias
+				.FirstOrDefaultAsync(c => c.Id == id && c.Ativo);
+        }
+		public async Task<Categoria> CreateCategoria(Categoria categoria)
+		{
+			Categoria novaCategoria = (await dbContext.Categorias.AddAsync(categoria)).Entity;
+			await dbContext.SaveChangesAsync();
+			return novaCategoria;
+        }
 
-	}
+    }
 }

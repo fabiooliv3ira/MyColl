@@ -18,6 +18,9 @@ namespace RESTfulAPIMYCOLL.Repositories
 
         Task<Produto> AtualizarProdutoAsync(Produto produto);
 
+        Task<IEnumerable<Produto>> ObterProdutoPorFuncionario(string id);
+
+
 
     }
 }

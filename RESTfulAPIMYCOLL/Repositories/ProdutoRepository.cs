@@ -90,5 +90,10 @@ namespace RESTfulAPIMYCOLL.Repositories
 				return false;
 			}
 		}
-	}
+		public async Task<IEnumerable<Produto>> ObterProdutoPorFuncionario(string id)
+		{
+			return await _context.Produtos
+				.Where(p => p.ApplicationUserId == id).ToListAsync();
+        }
+    }
 }

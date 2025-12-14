@@ -5,10 +5,12 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using MYCOLL.Entities
 @using MYCOLL.Data
+@using MYCOLL.Services
 @implements IAsyncDisposable
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ProdutoService ProdutoService
 
 @attribute [Authorize(Roles = "Admin, Funcionario, Fornecedor")]
 
@@ -48,7 +50,7 @@ else
 @code {
     private ApplicationDbContext context = default!;
     private string? currentUserId;
-    private List<Produto> produtos = null!;
+    private IEnumerable<Produto> produtos = null!;
     private Boolean isFuncionario;
 
     protected override async Task OnInitializedAsync()
@@ -69,13 +71,11 @@ else
 
         if (isFuncionario)
         {
-			produtos = await context.Produtos.ToListAsync();
+            produtos = await ProdutoService.GetProdutos();
         }
         else
         {
-            produtos = await context.Produtos
-           .Where(p => p.ApplicationUserId == currentUserId)
-           .ToListAsync();
+            produtos = await ProdutoService.GetProdutosPorFuncionario(currentUserId);
         }
        
 

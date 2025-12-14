@@ -1,8 +1,11 @@
 ﻿@page "/subcategoria/create"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject CategoriaService CategoriaService
+@inject SubCategoriaService SubCategoriaService
 
 <PageTitle>Create</PageTitle>
 
@@ -48,18 +51,16 @@
 @code {
     [SupplyParameterFromForm]
     private SubCategoria SubCategoria { get; set; } = new();
-    List<Categoria> selCategorias = new();
+    IEnumerable<Categoria> selCategorias = Enumerable.Empty<Categoria>();
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        selCategorias = await context.Categorias.ToListAsync();       
+        selCategorias = await CategoriaService.GetCategorias();       
     }
     private async Task AddSubCategoria()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.SubCategorias.Add(SubCategoria);
-        await context.SaveChangesAsync();
+		var result = await SubCategoriaService.CreateSubCategoria(SubCategoria);
         NavigationManager.NavigateTo("/subcategoria");
     }
 }

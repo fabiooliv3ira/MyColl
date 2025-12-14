@@ -8,10 +8,10 @@ namespace RESTfulAPIMYCOLL.Entities
 		
 		public int Id { get; set; }
 		public DateTime Data { get; set; }
-		public string Estado { get; set; } = null!; // NaoPaga, Pendente, Confirmada, Rejeitada, Expedida
+		public string Estado { get; set; } = null!; // NaoPaga, Pendente, Confirmada, Expedida
 		public decimal ValorTotal { get; set; }
 		public string UserId { get; set; } = null!;
-		List<ItemCarrinho>? ItensCarrinho { get; set; }
+		public List<ItemCarrinho>? ItensCarrinho { get; set; }
 
     }
 }

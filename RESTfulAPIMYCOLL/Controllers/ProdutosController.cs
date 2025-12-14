@@ -53,7 +53,6 @@ namespace RESTfulAPIMYCOLL.Controllers
 		}
 
 		// PUT api/<ProdutosController>/5
-		[Authorize]
 		[HttpPut]
 		public async Task<Produto> Put([FromBody] Produto produto)
 		{
@@ -61,11 +60,15 @@ namespace RESTfulAPIMYCOLL.Controllers
 		}
 
 		// DELETE api/<ProdutosController>/5
-		[Authorize]
 		[HttpDelete("{id}")]
 		public async Task<bool> Delete(int id)
 		{
 			return await _produtoRepository.EliminarProdutoAsync(id);
 		}
-	}
+		[HttpGet("Por-funcionario/{id}")]
+		public async Task<IEnumerable<Produto>> GetProdutoPorFuncionario(string id)
+		{
+			return await _produtoRepository.ObterProdutoPorFuncionario(id);
+        }
+    }
 }

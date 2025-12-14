@@ -10,7 +10,6 @@ namespace RESTfulAPIMYCOLL.Entities
 		public int Id { get; set; }
 		public string Nome { get; set; } = null!;
 		public bool Ativo { get; set; }
-		List<SubCategoria>? SubCategorias { get; set; }
 
     }
 }

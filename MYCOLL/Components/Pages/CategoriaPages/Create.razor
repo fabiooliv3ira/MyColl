@@ -1,9 +1,10 @@
 ﻿@page "/categoria/create"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
-
+@inject CategoriaService CategoriaService
 <PageTitle>Create</PageTitle>
 
 <h1>Create</h1>
@@ -41,9 +42,7 @@
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddCategoria()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Categorias.Add(Categoria);
-        await context.SaveChangesAsync();
+		await CategoriaService.CreateCategoria(Categoria);
         NavigationManager.NavigateTo("/categoria");
     }
 }

@@ -9,5 +9,6 @@
         public string EstadoPagamento { get; set; } = null!; // e.g. "Pendente", "Concluído", "Falhado"
         // FK
         public int EncomendaId { get; set; }
+        public Encomenda? Encomenda { get; set; }
     }
 }

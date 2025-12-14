@@ -4,8 +4,9 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using MYCOLL.Entities
 @using MYCOLL.Data
-@implements IAsyncDisposable
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
+@inject SubCategoriaService SubCategoriaService
 @attribute [Authorize(Roles = "Admin, Funcionario")]
 <PageTitle>Index</PageTitle>
 
@@ -15,7 +16,7 @@
     <a href="subcategoria/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="context.SubCategorias">
+<QuickGrid Class="table" Items="subcategorias.AsQueryable()">
     <PropertyColumn Property="subcategoria => subcategoria.Nome" />
     <PropertyColumn Property="subcategoria => subcategoria.Ativo" />
     <PropertyColumn Property="subcategoria => subcategoria.CategoriaId" />
@@ -28,12 +29,14 @@
 </QuickGrid>
 
 @code {
-    private ApplicationDbContext context = default!;
+    //private ApplicationDbContext context = default!;
+	private IEnumerable<SubCategoria> subcategorias = Enumerable.Empty<SubCategoria>();
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
+        //context = DbFactory.CreateDbContext();
+		subcategorias = await SubCategoriaService.GetSubCategorias();
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    //public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }

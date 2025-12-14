@@ -3,10 +3,13 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ProdutoService ProdutoService
+@inject SubCategoriaService SubCategoriaService
 
 
 <PageTitle>Create</PageTitle>
@@ -94,14 +97,12 @@
 @code {
     [SupplyParameterFromForm]
     private Produto Produto { get; set; } = new();
-    List<SubCategoria> selSubCategorias = new();
+    IEnumerable<SubCategoria> selSubCategorias = Enumerable.Empty<SubCategoria>();
     private string? currentUserId;
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddProduto()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Produtos.Add(Produto);
-        await context.SaveChangesAsync();
+		await ProdutoService.CreateProduto(Produto);
         NavigationManager.NavigateTo("/produtos");
     }
     private string? previewUrl;
@@ -126,7 +127,7 @@
         var user = authState.User;
 
         using var context = DbFactory.CreateDbContext();
-        selSubCategorias = await context.SubCategorias.ToListAsync();
+        selSubCategorias = await SubCategoriaService.GetSubCategorias();
 
         if (user.Identity?.IsAuthenticated == true)
         {

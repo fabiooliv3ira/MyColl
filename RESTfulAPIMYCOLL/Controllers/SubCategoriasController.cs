@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Entities;
+using RESTfulAPIMYCOLL.Repositories;
 
 namespace RESTfulAPIMYCOLL.Controllers
 {
@@ -10,26 +11,29 @@ namespace RESTfulAPIMYCOLL.Controllers
 	public class SubCategoriasController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;
+		ISubCategoriasRepository _subCategoriasRepository;
 
-		public SubCategoriasController(ApplicationDbContext context)
+		public SubCategoriasController(ApplicationDbContext context, ISubCategoriasRepository subCategoriasRepository)
 		{
 			_context = context;
-		}
-
+			_subCategoriasRepository = subCategoriasRepository;
+        }
 		// GET: api/SubCategorias
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<SubCategoria>>> GetSubCategorias()
+		public async Task<IEnumerable<SubCategoria>> GetSubCategorias()
 		{
-			return await _context.SubCategorias.ToListAsync();
+			return await _subCategoriasRepository.GetAllSubCategoriasAsync();
 		}
-
 		// GET: api/SubCategorias/PorCategoria/1 (Filtra por categoria mãe)
 		[HttpGet("PorCategoria/{categoriaId}")]
-		public async Task<ActionResult<IEnumerable<SubCategoria>>> GetPorCategoria(int categoriaId)
+		public async Task<IEnumerable<SubCategoria>> GetPorCategoria(int categoriaId)
 		{
-			return await _context.SubCategorias
-				.Where(s => s.CategoriaId == categoriaId)
-				.ToListAsync();
-		}
-	}
+			return await _subCategoriasRepository.GetSubCategoriasByCategoriaIdAsync(categoriaId);
+        }
+		[HttpPost]
+		public async Task<SubCategoria> PostSubCategoria([FromBody]SubCategoria subCategoria)
+		{
+;			return await _subCategoriasRepository.AddSubCategoriaAsync(subCategoria);
+        }
+    }
 }

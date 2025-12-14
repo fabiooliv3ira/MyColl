@@ -3,10 +3,13 @@
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
 @using Microsoft.AspNetCore.Identity
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ProdutoService ProdutoService
+@inject SubCategoriaService SubCategoriaService
 
 <PageTitle>Edit</PageTitle>
 
@@ -101,40 +104,44 @@ else
 @code {
     [SupplyParameterFromQuery]
     private int Id { get; set; }
-    List<SubCategoria> selSubCategorias = new();
+    IEnumerable<SubCategoria> selSubCategorias = Enumerable.Empty<SubCategoria>();
     private string? currentUserId;
 
     [SupplyParameterFromForm]
     private Produto? Produto { get; set; }
 
-    
+
     private async Task UpdateProduto()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Attach(Produto!).State = EntityState.Modified;
+        // using var context = DbFactory.CreateDbContext();
+        // context.Attach(Produto!).State = EntityState.Modified;
 
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!ProdutoExists(Produto!.Id))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        // try
+        // {
+        //     await context.SaveChangesAsync();
+        // }
+        // catch (DbUpdateConcurrencyException)
+        // {
+        //     if (!ProdutoExists(Produto!.Id))
+        //     {
+        //         NavigationManager.NavigateTo("notfound");
+        //     }
+        //     else
+        //     {
+        //         throw;
+        //     }
+        // }
+        await ProdutoService.UpdateProduto(Produto!);
         NavigationManager.NavigateTo("/produtos");
     }
 
     private string? previewUrl;
     private async Task OnImageChange(InputFileChangeEventArgs e)
     {
+        if(Produto == null)
+        {
+            return;
+        }
         var file = e.File;
 
         using var stream = new MemoryStream();
@@ -150,12 +157,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
-        selSubCategorias = await context.SubCategorias.ToListAsync();
+        if (Produto == null)
+        {
+            return;
+        }
+        selSubCategorias = await SubCategoriaService.GetSubCategorias();
         // Obter informação do utilizador logado
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        Produto ??= await context.Produtos.FirstOrDefaultAsync(m => m.Id == Id);
+        Produto ??= await ProdutoService.GetProdutosPorID(Produto.Id);
 
         if (Produto is null)
         {
@@ -179,11 +189,5 @@ else
             }
 
         }
-    }
-
-    private bool ProdutoExists(int id)
-    {
-        using var context = DbFactory.CreateDbContext();
-        return context.Produtos.Any(e => e.Id == id);
     }
 }
