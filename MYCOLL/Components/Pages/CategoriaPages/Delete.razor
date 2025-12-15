@@ -1,8 +1,10 @@
 ﻿@page "/categoria/delete"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject CategoriaService CategoriaService
 
 <PageTitle>Delete</PageTitle>
 
@@ -41,7 +43,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        categoria = await context.Categorias.FirstOrDefaultAsync(m => m.Id == Id);
+        categoria = await CategoriaService.GetCategoriaById(Id);
 
         if (categoria is null)
         {
@@ -50,10 +52,8 @@
     }
 
     private async Task DeleteCategoria()
-    {
-        using var context = DbFactory.CreateDbContext();
-        context.Categorias.Remove(categoria!);
-        await context.SaveChangesAsync();
+    {    
+		await CategoriaService.DeleteCategoria(categoria.Id);
         NavigationManager.NavigateTo("/categoria");
     }
 }

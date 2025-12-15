@@ -109,28 +109,9 @@ else
 
     [SupplyParameterFromForm]
     private Produto? Produto { get; set; }
-
-
+    
     private async Task UpdateProduto()
     {
-        // using var context = DbFactory.CreateDbContext();
-        // context.Attach(Produto!).State = EntityState.Modified;
-
-        // try
-        // {
-        //     await context.SaveChangesAsync();
-        // }
-        // catch (DbUpdateConcurrencyException)
-        // {
-        //     if (!ProdutoExists(Produto!.Id))
-        //     {
-        //         NavigationManager.NavigateTo("notfound");
-        //     }
-        //     else
-        //     {
-        //         throw;
-        //     }
-        // }
         await ProdutoService.UpdateProduto(Produto!);
         NavigationManager.NavigateTo("/produtos");
     }
@@ -157,6 +138,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Produto ??= await ProdutoService.GetProdutosPorID(Id);
         if (Produto == null)
         {
             return;
@@ -165,7 +147,6 @@ else
         // Obter informação do utilizador logado
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        Produto ??= await ProdutoService.GetProdutosPorID(Produto.Id);
 
         if (Produto is null)
         {

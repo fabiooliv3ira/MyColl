@@ -21,7 +21,12 @@ namespace RESTfulAPIMYCOLL.Repositories
 			return await _context.SubCategorias.ToListAsync();
 		}
 
-		public async Task<IEnumerable<SubCategoria>> GetSubCategoriasByCategoriaIdAsync(int categoriaId)
+		public async Task<SubCategoria?> GetSubCategoriaByIdAsync(int id)
+		{
+			return await _context.SubCategorias.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<SubCategoria>> GetSubCategoriasByCategoriaIdAsync(int categoriaId)
 		{
 			return await _context.SubCategorias
 				.Where(s => s.CategoriaId == categoriaId)
@@ -32,6 +37,31 @@ namespace RESTfulAPIMYCOLL.Repositories
 			_context.SubCategorias.Add(subCategoria);
 			await _context.SaveChangesAsync();
 			return subCategoria;
+		}
+		public async Task<SubCategoria?> UpdateSubCategoriaAsync(int id, SubCategoria subCategoria)
+		{
+			var existingSubCategoria = await _context.SubCategorias.FindAsync(id);
+			if (existingSubCategoria == null)
+			{
+				return null;
+
+			}
+			existingSubCategoria.Nome = subCategoria.Nome;
+			existingSubCategoria.Ativo = subCategoria.Ativo;
+			existingSubCategoria.CategoriaId = subCategoria.CategoriaId;
+			await _context.SaveChangesAsync();
+			return existingSubCategoria;
+		}
+		public async Task<bool> DeleteSubCategoriaAsync(int id)
+		{
+			var existingSubCategoria = await _context.SubCategorias.FindAsync(id);
+			if (existingSubCategoria == null)
+			{
+				return false;
+			}
+			_context.SubCategorias.Remove(existingSubCategoria);
+			await _context.SaveChangesAsync();
+			return true;
         }
     }
 }

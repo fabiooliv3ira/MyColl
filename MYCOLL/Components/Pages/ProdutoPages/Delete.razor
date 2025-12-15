@@ -1,8 +1,10 @@
 ﻿@page "/produtos/delete"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject ProdutoService ProdutoService
 
 <PageTitle>Delete</PageTitle>
 
@@ -72,8 +74,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
-        produto = await context.Produtos.FirstOrDefaultAsync(m => m.Id == Id);
+		produto = await ProdutoService.GetProdutosPorID(Id);
 
         if (produto is null)
         {
@@ -83,9 +84,7 @@
 
     private async Task DeleteProduto()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Produtos.Remove(produto!);
-        await context.SaveChangesAsync();
+		await ProdutoService.DeleteProduto(produto!.Id);
         NavigationManager.NavigateTo("/produtos");
     }
 }

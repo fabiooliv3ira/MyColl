@@ -1,8 +1,10 @@
 ﻿@page "/subcategoria/edit"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject SubCategoriaService SubCategoriaService
 
 <PageTitle>Edit</PageTitle>
 
@@ -56,44 +58,22 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
-        SubCategoria ??= await context.SubCategorias.FirstOrDefaultAsync(m => m.Id == Id);
+        SubCategoria ??= await SubCategoriaService.GetSubCategoriaById(Id);
 
         if (SubCategoria is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
     }
-
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateSubCategoria()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.Attach(SubCategoria!).State = EntityState.Modified;
-
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!SubCategoriaExists(SubCategoria!.Id))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+		await SubCategoriaService.UpdateSubCategoria(Id, SubCategoria!);
         NavigationManager.NavigateTo("/subcategoria");
     }
 
     private bool SubCategoriaExists(int id)
     {
-        using var context = DbFactory.CreateDbContext();
-        return context.SubCategorias.Any(e => e.Id == id);
+		bool sub = SubCategoriaService.GetSubCategoriasByCategoriaId(id) != null ? true:false;
+        return sub;
     }
 }

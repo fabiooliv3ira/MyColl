@@ -1,8 +1,10 @@
 ﻿@page "/subcategoria/delete"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject SubCategoriaService SubCategoriaService
 
 <PageTitle>Delete</PageTitle>
 
@@ -45,7 +47,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        subcategoria = await context.SubCategorias.FirstOrDefaultAsync(m => m.Id == Id);
+        subcategoria = await SubCategoriaService.GetSubCategoriaById(Id);
 
         if (subcategoria is null)
         {
@@ -55,9 +57,7 @@
 
     private async Task DeleteSubCategoria()
     {
-        using var context = DbFactory.CreateDbContext();
-        context.SubCategorias.Remove(subcategoria!);
-        await context.SaveChangesAsync();
+		await SubCategoriaService.DeleteSubCategoria(subcategoria.Id);
         NavigationManager.NavigateTo("/subcategoria");
     }
 }

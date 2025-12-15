@@ -24,6 +24,25 @@ namespace MYCOLL.Services
             }
             return null;
         }
+        public async Task<Categoria?> UpdateCategoria(int id, Categoria categoria)
+        {
+            var response = await http.PutAsJsonAsync($"api/Categorias/{id}", categoria);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<Categoria>();
+            }
+            return null;
+        }
+        public async Task<bool> DeleteCategoria(int id)
+        {
+            var response = await http.DeleteAsync($"api/Categorias/{id}");
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<Categoria?> GetCategoriaById(int id)
+        {
+            var response = await http.GetFromJsonAsync<Categoria>($"api/Categorias/{id}");
+            return response;
+        }
     }
 }
 

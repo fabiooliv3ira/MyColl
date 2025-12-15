@@ -7,10 +7,11 @@
 @using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject SubCategoriaService SubCategoriaService
+@inject CategoriaService CategoriaService
 @attribute [Authorize(Roles = "Admin, Funcionario")]
 <PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
+<h1>SubCategorias</h1>
 
 <p>
     <a href="subcategoria/create">Create New</a>
@@ -30,13 +31,18 @@
 
 @code {
     //private ApplicationDbContext context = default!;
-	private IEnumerable<SubCategoria> subcategorias = Enumerable.Empty<SubCategoria>();
-
+    private IEnumerable<SubCategoria> subcategorias = Enumerable.Empty<SubCategoria>();
+    private Categoria categoria = new Categoria();
     protected async override Task OnInitializedAsync()
     {
         //context = DbFactory.CreateDbContext();
-		subcategorias = await SubCategoriaService.GetSubCategorias();
+        subcategorias = await SubCategoriaService.GetSubCategorias();
     }
 
+    private async Task<String> GetNomeCategoria(int Id)
+    {
+		categoria = await CategoriaService.GetCategoriaById(Id) ?? new Categoria();
+        return categoria.Nome;
+    }
     //public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }

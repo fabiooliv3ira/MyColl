@@ -1,8 +1,10 @@
 ﻿@page "/subcategoria/details"
 @using Microsoft.EntityFrameworkCore
 @using MYCOLL.Entities
+@using MYCOLL.Services
 @inject IDbContextFactory<MYCOLL.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject SubCategoriaService SubCategoriaService
 
 <PageTitle>Details</PageTitle>
 
@@ -39,8 +41,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
-        subcategoria = await context.SubCategorias.FirstOrDefaultAsync(m => m.Id == Id);
+        subcategoria = await SubCategoriaService.GetSubCategoriaById(Id);
 
         if (subcategoria is null)
         {

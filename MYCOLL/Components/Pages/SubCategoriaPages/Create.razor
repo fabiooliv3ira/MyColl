@@ -55,7 +55,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
         selCategorias = await CategoriaService.GetCategorias();       
     }
     private async Task AddSubCategoria()
