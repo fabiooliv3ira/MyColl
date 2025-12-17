@@ -39,10 +39,15 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+builder.Services.AddScoped<MYCOLL.Services.AuthenticacaoService>();
+builder.Services.AddScoped<MYCOLL.Services.TokenStorageService>();
+builder.Services.AddTransient<MYCOLL.Services.JwtAuthenticationHandler>();
+
 builder.Services.AddHttpClient("api", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7077");
-});
+}).AddHttpMessageHandler<MYCOLL.Services.JwtAuthenticationHandler>()    ;
+
 builder.Services.AddScoped<MYCOLL.Services.CategoriaService>();
 
 builder.Services.AddScoped<MYCOLL.Services.SubCategoriaService>();

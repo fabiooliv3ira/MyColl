@@ -5,6 +5,7 @@ using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Repositories;
 using System.Text;
 using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,13 +50,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		};
 	});
 
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+	  .AddEntityFrameworkStores<ApplicationDbContext>()
+	  .AddDefaultTokenProviders()
+	  .AddApiEndpoints();
 
 //Registar servicos adicionais - autenticacao e endpoints da API Identity
 builder.Services.AddAuthorization();
-
-builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
-	   .AddEntityFrameworkStores<ApplicationDbContext>();
-
 
 
 var app = builder.Build();
@@ -73,6 +74,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Configurar CORS para permitir pedidos da aplicação Blazor
+
+app.UseCors("AllowBlazorApp");
+
+//Adicionar autenticação e autorização ao pipeline de processamento de pedidos
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
