@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using RESTfulAPIMYCOLL.Data;
-using RESTfulAPIMYCOLL.Entities.Dto;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using RESTfulAPIMYCOLL.Data;
+using RESTfulAPIMYCOLL.Entities.Dto;
 
 namespace RESTfulAPIMYCOLL.Controllers
 {
@@ -49,7 +49,7 @@ namespace RESTfulAPIMYCOLL.Controllers
             return Ok(
                 new AuthResponseDto
                 {
-                    AccessToken = token.ToString(),
+                    AccessToken = token.Result,
                     JsonTokenType = "Bearer",
                     ExpiresIn = 3600,
                     EmailTokenProvider = user.Email ?? string.Empty
@@ -83,7 +83,7 @@ namespace RESTfulAPIMYCOLL.Controllers
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
                 );
-            return token.ToString();
+            return token.EncodedHeader;
 
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using RESTfulAPIMYCOLL.Entities.Dto;
+using System.Text.Json;
 
 namespace MYCOLL.Services
 {
@@ -21,25 +22,33 @@ namespace MYCOLL.Services
 
             try
             {
-                var response = await http.PostAsJsonAsync("Identity/Login", loginData);
+                var response = await http.PostAsJsonAsync("api/Auth2", loginData);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var authResponse = JsonSerializer.Deserialize<AuthResponse>(
+                    var authResponse = JsonSerializer.Deserialize<AuthResponseDto>(
                         json,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (authResponse != null && !string.IsNullOrEmpty(authResponse.Token))
+                    if (authResponse != null && !string.IsNullOrEmpty(authResponse.AccessToken))
                     {
-                        tokenStorageService.SetToken(authResponse.Token, authResponse.ExpirationTime);
+                        tokenStorageService.SetToken(authResponse.AccessToken, authResponse.ExpiresIn);
+
+                        Console.WriteLine("---------------------------------");
 
                         Console.WriteLine("Token stored successfully.");
-                        Console.WriteLine($"Token: {authResponse.Token.Substring(0, 20)}...");
-                        Console.WriteLine("Tipo de Token: " + authResponse.Token.GetType().Name);
-                        Console.WriteLine("Expiration Time: " + authResponse.ExpirationTime);
-                        Console.WriteLine("Email: " + authResponse.Email);
+                        Console.WriteLine($"Token: {authResponse.AccessToken.Substring(0, 20)}...");
+                        Console.WriteLine("Tipo de Token: " + authResponse.AccessToken.GetType().Name);
+                        Console.WriteLine("Expiration Time: " + authResponse.ExpiresIn);
+                        Console.WriteLine("Email: " + authResponse.EmailTokenProvider);
+                        Console.WriteLine("---------------------------------");
                     }
-
+                    else
+                    {
+                        Console.WriteLine("---------------------------------");
+                        Console.WriteLine($"{string.IsNullOrEmpty(authResponse.AccessToken)} + {authResponse != null}");
+                        Console.WriteLine("---------------------------------");
+                    }
                 }
                 return new loginResult
                 {
@@ -58,15 +67,6 @@ namespace MYCOLL.Services
                 Message = "An error occurred during login."
             };
         }
-    }
-    public class AuthResponse
-    {
-        public string? Token { get; set; }
-        public string? TokenType { get; set; }
-        public int ExpirationTime { get; set; }
-        public string? Email { get; set; }
-
-
     }
 
     public class loginResult
