@@ -8,7 +8,8 @@ using RESTfulAPIMYCOLL.Entities;
 namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
-	[ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiController]
 	public class ProdutosController : ControllerBase
 	{
 		// GET: api/<ProdutosController>

@@ -83,7 +83,8 @@ namespace RESTfulAPIMYCOLL.Controllers
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
                 );
-            return token.EncodedHeader;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
 
         }
 

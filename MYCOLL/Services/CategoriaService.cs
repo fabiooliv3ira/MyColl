@@ -1,17 +1,23 @@
 ﻿using Microsoft.Rest;
 using MYCOLL.Entities;
+using System.Net.Http.Headers;
 
 namespace MYCOLL.Services
 {
     public class CategoriaService
     {
         private readonly HttpClient http;
-        public CategoriaService(IHttpClientFactory factory)
+        private readonly TokenStorageService _tokenStorage;
+
+        public CategoriaService(IHttpClientFactory factory, TokenStorageService tokenStorage)
         {
-            this.http = factory.CreateClient("api"); 
+            this.http = factory.CreateClient("api");
+            _tokenStorage = tokenStorage;
         }
+
         public async Task<IEnumerable<Categoria>> GetCategorias()
         {
+            
             var response = await http.GetFromJsonAsync<IEnumerable<Categoria>>("api/Categorias");
             return response ?? Enumerable.Empty<Categoria>();
         }

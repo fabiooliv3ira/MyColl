@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RESTfulAPIMYCOLL.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,7 +7,8 @@ using System.Threading.Tasks;
 namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
-	[ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiController]
 	public class TipoUtilizadorController : ControllerBase
 	{
 		private readonly ITipoUtilizadorRepository _repository;
