@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
-	[ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiController]
 	public class EncomendaController : ControllerBase
 	{
 		private readonly IEncomendaRepository _encomendaRepository;

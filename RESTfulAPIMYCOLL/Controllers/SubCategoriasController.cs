@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RESTfulAPIMYCOLL.Data;
 using RESTfulAPIMYCOLL.Entities;
@@ -7,7 +8,8 @@ using RESTfulAPIMYCOLL.Repositories;
 namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
-	[ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ApiController]
 	public class SubCategoriasController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;

@@ -24,37 +24,31 @@ namespace MYCOLL.Services
             {
                 var response = await http.PostAsJsonAsync("api/Auth2", loginData);
 
+                Console.WriteLine($"[AuthService] Login response status: {response.StatusCode}");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     var authResponse = JsonSerializer.Deserialize<AuthResponseDto>(
                         json,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    Console.WriteLine($"[AuthService] Received token null? {string.IsNullOrEmpty(authResponse?.AccessToken)} ExpiresIn={authResponse?.ExpiresIn}");
+
                     if (authResponse != null && !string.IsNullOrEmpty(authResponse.AccessToken))
                     {
                         tokenStorageService.SetToken(authResponse.AccessToken, authResponse.ExpiresIn);
-
-                        Console.WriteLine("---------------------------------");
-
-                        Console.WriteLine("Token stored successfully.");
-                        Console.WriteLine($"Token: {authResponse.AccessToken.Substring(0, 20)}...");
-                        Console.WriteLine("Tipo de Token: " + authResponse.AccessToken.GetType().Name);
-                        Console.WriteLine("Expiration Time: " + authResponse.ExpiresIn);
-                        Console.WriteLine("Email: " + authResponse.EmailTokenProvider);
-                        Console.WriteLine("---------------------------------");
+                        Console.WriteLine("[AuthService] TokenStorageService.SetToken called.");
                     }
                     else
                     {
-                        Console.WriteLine("---------------------------------");
-                        Console.WriteLine($"{string.IsNullOrEmpty(authResponse.AccessToken)} + {authResponse != null}");
-                        Console.WriteLine("---------------------------------");
+                        Console.WriteLine("[AuthService] No token returned from API.");
                     }
                 }
                 return new loginResult
                 {
-                    Success = true,
-                    Message = "Login feito."
-
+                    Success = response.IsSuccessStatusCode,
+                    Message = response.IsSuccessStatusCode ? "Login successful." : "Login failed."
                 };
             }
             catch (Exception ex)
@@ -73,6 +67,5 @@ namespace MYCOLL.Services
     {
         public bool Success { get; set; }
         public string? Message { get; set; }
-       
     }
 }

@@ -9,8 +9,8 @@ namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize] // Só utilizadores autenticados podem mexer no carrinho
-	public class ItemCarrinhoController : ControllerBase
+    [Authorize(AuthenticationSchemes = "Bearer")] // Só utilizadores autenticados podem mexer no carrinho
+    public class ItemCarrinhoController : ControllerBase
 	{
 		private readonly IItemCarrinhoRepository _itemRepository;
 		private readonly IEncomendaRepository _encomendaRepository; // Necessário para verificar dono da encomenda no Add

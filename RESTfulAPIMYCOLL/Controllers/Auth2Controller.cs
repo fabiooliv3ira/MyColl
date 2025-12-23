@@ -55,6 +55,12 @@ namespace RESTfulAPIMYCOLL.Controllers
                     EmailTokenProvider = user.Email ?? string.Empty
                 });
         }
+        [HttpPost("logout")]
+        public async Task<IActionResult> logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok();
+        }
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtKey = _config["JWT:Key"] ?? throw new InvalidOperationException();
@@ -83,7 +89,8 @@ namespace RESTfulAPIMYCOLL.Controllers
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
                 );
-            return token.EncodedHeader;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
 
         }
 
