@@ -130,9 +130,6 @@ namespace MYCOLL.Services
                 Console.WriteLine($"[TokenStorageService.ClearToken] Error: {ex.Message}");
             }
         }
-                                                                                                        public bool isValid()
-                                                                                                        {
-
-                                                                                                        }
+                                                                                                    
     }
 }

@@ -7,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7054/")
+});
 
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,12 +30,5 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
 	.AddInteractiveServerRenderMode();
-
-builder.Services.AddScoped(sp => new HttpClient
-{
-	BaseAddress = new Uri("https://localhost:7054/")
-});
-
-builder.Services.AddScoped<IProdutoService, ProdutoService>();
 
 app.Run();
