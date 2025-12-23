@@ -1,20 +1,30 @@
 ﻿// TokenStorageService.cs
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using MYCOLL.Data;
 
 namespace MYCOLL.Services
 {
     public class TokenStorageService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        
-        public TokenStorageService(IHttpContextAccessor httpContextAccessor)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly NavigationManager _navigationManager;
+        private readonly ILogger<TokenStorageService> _logger;
+
+        public TokenStorageService(
+            IHttpContextAccessor httpContextAccessor,
+            SignInManager<ApplicationUser> signInManager,
+            NavigationManager navigationManager,
+            ILogger<TokenStorageService> logger)
         {
-            _httpContextAccessor = httpContextAccessor ?? 
-                throw new ArgumentNullException(nameof(httpContextAccessor));
-            Console.WriteLine("[TokenStorageService] Constructor called");
-            Console.WriteLine($"[TokenStorageService] HttpContextAccessor is null: {httpContextAccessor == null}");
+            _httpContextAccessor = httpContextAccessor;
+            _signInManager = signInManager;
+            _navigationManager = navigationManager;
+            _logger = logger;
         }
-        
+
         public string GetToken()
         {
             try
@@ -120,5 +130,9 @@ namespace MYCOLL.Services
                 Console.WriteLine($"[TokenStorageService.ClearToken] Error: {ex.Message}");
             }
         }
+                                                                                                        public bool isValid()
+                                                                                                        {
+
+                                                                                                        }
     }
 }

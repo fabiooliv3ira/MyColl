@@ -55,6 +55,12 @@ namespace RESTfulAPIMYCOLL.Controllers
                     EmailTokenProvider = user.Email ?? string.Empty
                 });
         }
+        [HttpPost("logout")]
+        public async Task<IActionResult> logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok();
+        }
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtKey = _config["JWT:Key"] ?? throw new InvalidOperationException();
