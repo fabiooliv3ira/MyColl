@@ -1,0 +1,55 @@
+@page "/"
+@using MYCOLL.RCL.Data.DTO
+@using MYCOLL.RCL.Data.Interfaces
+
+@inject IProdutoService ProdutoService
+@inject NavigationManager NavManager
+
+<h3>Catálogo de Produtos</h3>
+
+@if (produtos == null)
+{
+    <p><em>A carregar produtos...</em></p>
+}
+else if (!produtos.Any())
+{
+    <p>Não existem produtos disponíveis.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var produto in produtos)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <!-- Se tiveres imagem em bytes, a lógica muda um pouco, aqui assumo URL ou sem imagem -->
+                    <div class="card-body">
+                        <h5 class="card-title">@produto.Nome</h5>
+                        <p class="card-text">@produto.Descricao</p>
+                        <h6 class="card-subtitle mb-2 text-muted">@produto.Preco.ToString("C")</h6>
+
+                        <button class="btn btn-primary" @onclick="() => VerDetalhes(produto.Id)">
+                            Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<ProdutoDTO>? produtos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Vai buscar os produtos à API quando a página abre
+        produtos = await ProdutoService.GetProdutosAsync();
+    }
+
+    private void VerDetalhes(int id)
+    {
+        // Navega para a página de detalhes (que vamos criar a seguir)
+        NavManager.NavigateTo($"/produto/{id}");
+    }
+}
