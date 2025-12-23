@@ -10,4 +10,8 @@
     <ProjectReference Include="..\MYCOLL.RCL\MYCOLL.RCL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,7 @@ builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7054/")
+    BaseAddress = new Uri("https://localhost:7077/")
 });
 
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
