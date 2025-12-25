@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using MYCOLL.RCL.Data.DTO;
 using MYCOLL.RCL.Data.Interfaces;
 
@@ -44,6 +42,37 @@ namespace MYCOLL.RCL.Data.Services
 			{
 				return null;
 			}
+		}
+
+		// Create
+		public async Task<ProdutoDTO?> CreateProdutoAsync(ProdutoDTO produto)
+		{
+			var resp = await _http.PostAsJsonAsync("api/Produtos", produto);
+			if (resp.IsSuccessStatusCode)
+			{
+				return await resp.Content.ReadFromJsonAsync<ProdutoDTO>();
+			}
+			var text = await resp.Content.ReadAsStringAsync();
+			throw new HttpRequestException($"CreateProduto failed: {resp.StatusCode} - {text}");
+		}
+
+		// Update
+		public async Task<ProdutoDTO?> UpdateProdutoAsync(ProdutoDTO produto)
+		{
+			var resp = await _http.PutAsJsonAsync($"api/Produtos/{produto.Id}", produto);
+			if (resp.IsSuccessStatusCode)
+			{
+				return await resp.Content.ReadFromJsonAsync<ProdutoDTO>();
+			}
+			var text = await resp.Content.ReadAsStringAsync();
+			throw new HttpRequestException($"UpdateProduto failed: {resp.StatusCode} - {text}");
+		}
+
+		// Delete
+		public async Task<bool> DeleteProdutoAsync(int id)
+		{
+			var resp = await _http.DeleteAsync($"api/Produtos/{id}");
+			return resp.IsSuccessStatusCode;
 		}
 	}
 }

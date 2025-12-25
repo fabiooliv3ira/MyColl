@@ -15,5 +15,6 @@ namespace MYCOLL.RCL.Data.DTO
 		public decimal PrecoUnitario { get; set; } // Para mostrar ao user
 		public decimal Subtotal { get; set; }
 		public int EncomendaId { get; set; }
+		public ProdutoDTO? Produto { get; init; }
 	}
 }

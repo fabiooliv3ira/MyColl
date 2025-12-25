@@ -1,0 +1,97 @@
+@page "/carrinho"
+@using MYCOLL.RCL.Data.DTO
+@using MYCOLL.RCL.Data.Interfaces
+@inject ICarrinhoService CarrinhoService
+@using System.Linq
+
+<h3>Carrinho</h3>
+
+@if (isLoading)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    if (!itens.Any())
+    {
+        <p>O teu carrinho está vazio.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço</th>
+                    <th>Qtd</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in itens)
+                {
+                    <tr>
+                        <td>@item.Produto?.Nome</td>
+                        <td>@item.Produto?.Preco.ToString("C")</td>
+                        <td>@item.Quantidade</td>
+                        <td>@item.Subtotal.ToString("C")</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" @onclick="() => Remove(item.Id)">Remover</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p><strong>Total:</strong> @itens.Sum(i => i.Subtotal).ToString("C")</p>
+
+        <button class="btn btn-primary" @onclick="CreateOrder">Finalizar Encomenda</button>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="mt-2 alert alert-info">@message</div>
+        }
+    }
+}
+
+@code {
+    private IEnumerable<ItemCarrinhoDTO> itens = Enumerable.Empty<ItemCarrinhoDTO>();
+    private bool isLoading = true;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        isLoading = true;
+        itens = await CarrinhoService.GetMyCarrinhoAsync();
+        isLoading = false;
+    }
+
+    private async Task Remove(int id)
+    {
+        var ok = await CarrinhoService.RemoveItemAsync(id);
+        message = ok ? "Item removido." : "Erro ao remover.";
+        await Load();
+    }
+
+    private async Task CreateOrder()
+    {
+        // O endpoint POST /api/Encomenda espera Encomenda com ItensCarrinho
+        var encomenda = new EncomendaDTO { ItensCarrinho = itens.ToList() };
+        var created = await CarrinhoService.CreateEncomendaAsync(encomenda);
+        if (created != null)
+        {
+            message = $"Encomenda criada (Id {created.Id}).";
+            await Load();
+        }
+        else
+        {
+            message = "Erro ao criar encomenda.";
+        }
+    }
+}

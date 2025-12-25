@@ -16,12 +16,12 @@
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Pages\Fornecedor\ProdutoPages\" />
   </ItemGroup>
-
-
 
 </Project>

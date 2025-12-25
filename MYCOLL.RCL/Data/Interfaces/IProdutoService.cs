@@ -11,6 +11,10 @@ namespace MYCOLL.RCL.Data.Interfaces
 	{
 		Task<List<ProdutoDTO>> GetProdutosAsync();
 		Task<ProdutoDTO?> GetProdutoByIdAsync(int id);
-		// Add aqui o CreateProduto para o fornecedor
+
+		// Fornecedor:
+		Task<ProdutoDTO?> CreateProdutoAsync(ProdutoDTO produto);
+		Task<ProdutoDTO?> UpdateProdutoAsync(ProdutoDTO produto);
+		Task<bool> DeleteProdutoAsync(int id);
 	}
 }

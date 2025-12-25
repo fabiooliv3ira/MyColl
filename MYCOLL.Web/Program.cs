@@ -32,8 +32,8 @@ builder.Services.AddHttpClient("api", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7077/");
 
-    client.DefaultRequestHeaders.Accept.Add(
-        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+    //client.DefaultRequestHeaders.Accept.Add(
+    //    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 });
 
 builder.Services.AddBlazoredLocalStorage();
@@ -62,6 +62,15 @@ builder.Services.AddScoped<AuthenticacaoService>();
 // 2. Usar la misma instancia para el AuthenticationStateProvider
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<AuthenticacaoService>());
+
+builder.Services.AddHttpClient<ICarrinhoService, CarrinhoService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7054/"); // ajusta para a tua API
+    client.DefaultRequestHeaders.Accept.Add(
+        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
