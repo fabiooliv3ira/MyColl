@@ -1,6 +1,30 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+﻿@using MYCOLL.RCL.Shared
+@using MYCOLL.RCL.Data.DTO
+@*
+    <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
+*@
+@using Microsoft.AspNetCore.Components.Authorization
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly"
+            AdditionalAssemblies="new[] { typeof(RegisterDTO).Assembly }">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div style="background-color: red; color: white; padding: 20px;">
+                    <h1>ERRO 404 DO BLAZOR</h1>
+                    <p>O Router carregou, mas não encontrou a página '/'.</p>
+                    <p>Verifique se a Home.razor tem @@page "/" e está na RCL.</p>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

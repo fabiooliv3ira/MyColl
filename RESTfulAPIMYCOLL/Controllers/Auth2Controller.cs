@@ -61,6 +61,34 @@ namespace RESTfulAPIMYCOLL.Controllers
             await _signInManager.SignOutAsync();
             return Ok();
         }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = new ApplicationUser
+            {      
+                UserName = registerData.UserName,
+                Email = registerData.Email,
+                Nome = registerData.Nome,
+                NIF = registerData.NIF,
+                DataRegisto = DateTime.UtcNow,
+                IsActive = true
+            };
+            var result = await _userManager.CreateAsync(user, registerData.Password);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
+            await _userManager.AddToRoleAsync(user, registerData.TipoUtilizador);
+            return Ok();
+        }
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtKey = _config["JWT:Key"] ?? throw new InvalidOperationException();
@@ -76,12 +104,6 @@ namespace RESTfulAPIMYCOLL.Controllers
                 new Claim(ClaimTypes.Email, user.Email??string.Empty)
             };
 
-            var userRoles = await _userManager.GetRolesAsync(user);
-            foreach (var role in userRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
             var token = new JwtSecurityToken(
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
@@ -91,9 +113,7 @@ namespace RESTfulAPIMYCOLL.Controllers
                 );
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
-
         }
-
 
     }
 }

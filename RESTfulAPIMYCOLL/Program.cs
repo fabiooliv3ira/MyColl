@@ -124,7 +124,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await Inicializacao.CriaDadosIniciais(userManager, roleManager);
+    }
+    catch (Exception)
+    {
+        throw;
+    }
+}
 app.UseHttpsRedirection();
 
 // Activate CORS policy registered above

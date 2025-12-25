@@ -1,0 +1,78 @@
+﻿@page "/Account/RegisterClient"
+@using MYCOLL.RCL.Entities
+@using MYCOLL.RCL.Services
+@using MYCOLL.RCL.Data.DTO
+@inject AuthenticacaoService Api
+@inject NavigationManager Nav
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow mt-4">
+            <div class="card-body">
+                <h3 class="text-center">Criar Nova Conta</h3>
+
+                @if (!string.IsNullOrEmpty(mensagemErro))
+                {
+                    <div class="alert alert-danger">@mensagemErro</div>
+                }
+
+                <EditForm Model="registerModel" OnValidSubmit="RegistarUser">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label>Nome Completo</label>
+                        <InputText @bind-Value="registerModel.Nome" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Email</label>
+                        <InputText @bind-Value="registerModel.Email" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Password</label>
+                        <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label>NIF</label>
+                        <InputText @bind-Value="registerModel.NIF" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de Conta:</label>
+                        <InputSelect @bind-Value="registerModel.TipoUtilizador" class="form-select">
+                            <option value="-1">Escolha o Tipo</option>
+                            <option value="@TipoUtilizador.cliente">Cliente (Quero Comprar)</option>
+                            <option value="@TipoUtilizador.fornecedor">Fornecedor (Quero Vender)</option>
+                        </InputSelect>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 mt-3">Registar</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private RegisterDTO registerModel = new();
+    private string? mensagemErro;
+
+    private async Task RegistarUser()
+    {
+		registerModel.UserName = registerModel.Email;
+		Console.WriteLine($"Registando utilizador: {registerModel.Nome}, Email: {registerModel.Email}, Tipo: {registerModel.TipoUtilizador}");
+        var responseMessage = await Api.Register(
+            registerModel
+        );
+
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            Nav.NavigateTo("/login");
+        }
+        else
+        {
+            mensagemErro = "Erro ao registar. Verifique os dados ou se o email já existe.";
+        }
+    }
+
+}

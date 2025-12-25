@@ -56,7 +56,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-builder.Services.AddScoped<MYCOLL.Services.TokenStorageService>(); // This comes first
+builder.Services.AddScoped<MYCOLL.Services.TokenStorageService>();
 builder.Services.AddScoped<MYCOLL.Services.AuthenticacaoService>();
 builder.Services.AddTransient<MYCOLL.Services.JwtAuthenticationHandler>();
 

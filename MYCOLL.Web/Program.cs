@@ -1,18 +1,67 @@
-using MYCOLL.Web.Components;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using MYCOLL.RCL.Data.Interfaces;
 using MYCOLL.RCL.Data.Services;
+using MYCOLL.Web.Components;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MYCOLL.RCL.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
-builder.Services.AddScoped(sp => new HttpClient
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddCors(options =>
 {
-    BaseAddress = new Uri("https://localhost:7077/")
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
+builder.Services.AddHttpClient("api", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7077/");
+
+    client.DefaultRequestHeaders.Accept.Add(
+        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Cookies";
+    options.DefaultChallengeScheme = "Cookies";
+})
+.AddCookie("Cookies", options =>
+{
+    options.LoginPath = "/login";
+    options.LogoutPath = "/logout";
+    options.AccessDeniedPath = "/acesso-negado";
+    options.ExpireTimeSpan = TimeSpan.FromHours(24);
+    options.SlidingExpiration = true;
+});
+
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddAuthorizationCore();
+
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
+// 1. Registrar el servicio concreto primero
+builder.Services.AddScoped<AuthenticacaoService>();
+
+// 2. Usar la misma instancia para el AuthenticationStateProvider
+builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
+    provider.GetRequiredService<AuthenticacaoService>());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

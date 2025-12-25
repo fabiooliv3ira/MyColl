@@ -10,7 +10,7 @@ namespace MYCOLL.Data
             RoleManager<IdentityRole> roleManager)
         {
             // Adicionar default Roles
-            var roles = TipoUtilizador.GetAllTipos();
+            /*var roles = TipoUtilizador.GetAllTipos();
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
@@ -18,7 +18,7 @@ namespace MYCOLL.Data
                     IdentityRole roleRole = new IdentityRole(role);
                     await roleManager.CreateAsync(roleRole);
                 }
-            }
+            }*/
             // Adicionar default user - admin
             var defaultUser = new ApplicationUser
             {
