@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Layout\**" />
+    <Content Remove="Components\Layout\**" />
+    <EmbeddedResource Remove="Components\Layout\**" />
+    <None Remove="Components\Layout\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.38.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
@@ -14,10 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MYCOLL.RCL\MYCOLL.RCL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Components\Layout\" />
   </ItemGroup>
 
 </Project>

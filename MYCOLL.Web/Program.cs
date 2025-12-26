@@ -1,7 +1,6 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using MYCOLL.RCL.Data.Interfaces;
-using MYCOLL.RCL.Data.Services;
 using MYCOLL.Web.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +54,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<ProdutoService>();
+builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<SubCategoriaService>();
 // 1. Registrar el servicio concreto primero
 builder.Services.AddScoped<AuthenticacaoService>();
 

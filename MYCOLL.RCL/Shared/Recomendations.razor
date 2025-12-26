@@ -1,0 +1,29 @@
+﻿@using MYCOLL.RCL.Entities
+@using MYCOLL.RCL.Services
+@inject CategoriaService CategoriaService
+@inject ProdutoService ProdutoService
+@inject AuthenticacaoService AuthenticacaoService
+
+
+@if (produtos != null)
+{
+	<Carousel Title="Recomendados" Type="Big" Products="produtos.ToList()" />
+}
+
+@code {
+	IEnumerable<Categoria>? categorias;
+	IEnumerable<Produto>? produtos;
+	protected override async Task OnInitializedAsync()
+	{
+		categorias = await CategoriaService.GetCategorias();
+
+		Random rnd = new Random();
+		if (categorias is not null)
+		{
+			int number = rnd.Next(1, categorias.Count());
+			var categoriaSelecionada = categorias.ElementAt(number);
+			produtos = await ProdutoService.GetProdutosByCategoria(categoriaSelecionada.Id);
+		}
+		
+	}
+}

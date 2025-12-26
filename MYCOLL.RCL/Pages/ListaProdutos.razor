@@ -41,7 +41,7 @@ else
 }
 
 @code {
-    private List<ProdutoDTO>? produtos;
+    private List<Produto>? produtos;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,7 +60,7 @@ else
 
     private string? feedback;
 
-    private async Task AddToCart(ProdutoDTO produto)
+    private async Task AddToCart(Produto produto)
     {
         try
         {

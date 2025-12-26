@@ -85,6 +85,17 @@ namespace MYCOLL.RCL.Services
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
         }
+
+        public async Task<bool> IsTokenValid()
+        { 
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+            if (string.IsNullOrEmpty(token))
+                return false;
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            return jwtToken.ValidTo > DateTime.UtcNow;
+        }
+
         public async Task<loginResult> Login(string email, string password)
         {
             Console.WriteLine("🔓 Login - Guardando token...");
@@ -111,9 +122,16 @@ namespace MYCOLL.RCL.Services
 
                     if (authResponse != null && !string.IsNullOrEmpty(authResponse.AccessToken))
                     {
+                        // 1. Store token in localStorage
                         await _localStorage.SetItemAsync("authToken", authResponse.AccessToken);
+
+                        // 2. SET THE AUTHORIZATION HEADER HERE (NEW)
+                        http.DefaultRequestHeaders.Authorization =
+                            new AuthenticationHeaderValue("Bearer", authResponse.AccessToken);
+
+                        // 3. Notify authentication state changed
                         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                        Console.WriteLine("✅ Token guardado, estado de autenticação notificado");
+                        Console.WriteLine("✅ Token guardado e header configurado, estado de autenticação notificado");
                     }
                     else
                     {
@@ -135,7 +153,6 @@ namespace MYCOLL.RCL.Services
                 Success = false,
                 Message = "An error occurred during login."
             };
-            
         }
 
         public async Task<HttpResponseMessage> Register(RegisterDTO registerData)
@@ -165,11 +182,32 @@ namespace MYCOLL.RCL.Services
 
         public async Task Logout()
         {
-            Console.WriteLine("🔒 Logout - Removendo token...");
+            try
+            {
+                // Optional: Only call logout endpoint if you have server-side session management
+                var response = await http.PostAsJsonAsync("api/Auth2/logout", new { });
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Logout successful on server");
+                }
+                else
+                {
+                    Console.WriteLine($"Server logout failed: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log but don't fail - we still want to clear local state
+                Console.WriteLine($"Error calling logout endpoint: {ex.Message}");
+            }
+
+            // Always clear local authentication state
             await _localStorage.RemoveItemAsync("authToken");
             http.DefaultRequestHeaders.Authorization = null;
+
+            // Notify authentication state change
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-            Console.WriteLine("✅ Token removido, estado de autenticação notificado");
         }
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
