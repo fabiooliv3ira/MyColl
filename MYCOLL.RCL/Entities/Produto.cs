@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 using System;
-using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNetCore.Http;
 
 namespace MYCOLL.RCL.Entities
 {
@@ -30,8 +30,8 @@ namespace MYCOLL.RCL.Entities
         [MaxLength(5242880)]
         public byte[]? Imagem { get; set; }
 
-        [NotMapped] // Diz à entityCore para não mapear esta propriedade na base de dados
-        public IFormFile? ImageFile { get; set; }
+        //[NotMapped] // Diz à entityCore para não mapear esta propriedade na base de dados
+        //public IFormFile? ImageFile { get; set; }
 
     }
 }

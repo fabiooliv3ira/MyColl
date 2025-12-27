@@ -1,18 +1,12 @@
 ﻿@page "/Account/Login"
 
 @using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Identity
-@using MYCOLL.RCL.Data
+@using MYCOLL.RCL.Data.DTO
 @using MYCOLL.RCL.Services
+@using Microsoft.AspNetCore.Components.Authorization
 
-@* @inject SignInManager<ApplicationUser> SignInManager
-    @inject IdentityRedirectManager RedirectManager 
-@inject ILogger<Login> Logger*@
 @inject NavigationManager NavigationManager
-@inject AuthenticacaoService AuthenticacaoService;
-
+@inject AuthenticacaoService AuthenticacaoService
 
 <PageTitle>Log in</PageTitle>
 
@@ -24,36 +18,41 @@
             {
                 <div class="alert alert-danger">@errorMessage</div>
             }
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+
+            <!-- Removemos o method="post" e FormName, usamos OnValidSubmit padrão do Blazor -->
+            <EditForm Model="Input" OnValidSubmit="LoginUser">
                 <DataAnnotationsValidator />
                 <h2>Use a local account to log in.</h2>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
+
                 <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
                     <label for="email" class="form-label">Email</label>
                     <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
+
                 <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" placeholder="password" />
                     <label for="password" class="form-label">Password</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
+
+                <!-- Checkbox visual apenas, lógica de "Remember Me" depende do token storage -->
                 <div class="checkbox mb-3">
                     <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                        <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" />
                         Remember me
                     </label>
                 </div>
+
                 <div>
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
-                <div>
+
+                <div class="mt-2">
                     <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/RegisterClient", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
+                        <a href="Account/RegisterClient">Register as a new user</a>
                     </p>
                 </div>
             </EditForm>
@@ -64,47 +63,52 @@
 @code {
     private string? errorMessage;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    [SupplyParameterFromForm]
+    // Modelo simples instanciado diretamente
     private InputModel Input { get; set; } = new();
 
+    // Em Blazor Client, params da Query String vêm assim:
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-		await AuthenticacaoService.Logout();
+        // Limpa sessão antiga ao entrar na página de login
+        await AuthenticacaoService.Logout();
     }
 
     public async Task LoginUser()
     {
         try
         {
+            // Chama o teu serviço que já está correto
             var results = await AuthenticacaoService.Login(Input.Email, Input.Password);
+
             if (results.Success)
             {
-                errorMessage = results.Message;
-                NavigationManager.NavigateTo("/");
+                // Redireciona para a Home ou ReturnUrl
+                NavigationManager.NavigateTo(ReturnUrl ?? "/");
             }
-        }catch (Exception ex)
+            else
+            {
+                errorMessage = results.Message;
+            }
+        }
+        catch (Exception ex)
         {
             errorMessage = $"Error: {ex.Message}";
-		}
+        }
     }
 
-    private sealed class InputModel
+    // Classe auxiliar para o formulário
+    public class InputModel
     {
         [Required]
         [EmailAddress]
         public string Email { get; set; } = "";
 
         [Required]
-        [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 
-        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 }
