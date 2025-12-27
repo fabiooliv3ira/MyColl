@@ -1,38 +1,20 @@
-@* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-LER COMENTARIO DE ProdutosAdmin.razor
-    
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-
-
-
-
 @page "/admin/produtos/edit/{Id:int?}"
 @using MYCOLL.RCL.Data.DTO
-@using MYCOLL.RCL.Data.Interfaces
-@inject IProdutoService ProdutoService
+@inject MYCOLL.RCL.Data.Interfaces.IProdutoService ProdutoService
 @inject NavigationManager NavManager
 
-<AuthorizeView Roles="Employee">
-    <Authorized>
-        <h3>@(Id == null ? "Criar produto" : "Editar produto")</h3>
+<AuthorizeView>
+    <Authorized Context="authCtx">
+        <EditForm Model="produto" OnValidSubmit="Save" Context="editCtx">
+            <DataAnnotationsValidator />
 
-        @if (produto == null)
-        {
-            <p><em>A carregar...</em></p>
-        }
-        else
-        {
-            <EditForm Model="produto" OnValidSubmit="Save">
-                <InputText @bind-Value="produto.Nome" class="form-control" />
-                <InputTextArea @bind-Value="produto.Descricao" class="form-control mt-2" />
-                <InputNumber @bind-Value="produto.Preco" class="form-control mt-2" />
+            <InputText @bind-Value="produto.Nome" class="form-control" />
+            <InputTextArea @bind-Value="produto.Descricao" class="form-control mt-2" />
+            <InputNumber @bind-Value="produto.Preco" class="form-control mt-2" />
 
-                <button class="btn btn-primary mt-3" type="submit">Guardar</button>
-                <button class="btn btn-secondary mt-3" type="button" @onclick="Cancel">Cancelar</button>
-            </EditForm>
-        }
+            <button class="btn btn-primary mt-3" type="submit">Guardar</button>
+            <button class="btn btn-secondary mt-3" type="button" @onclick="Cancel">Cancelar</button>
+        </EditForm>
     </Authorized>
     <NotAuthorized>
         <p>Acesso restrito a funcionários.</p>
@@ -67,4 +49,4 @@ LER COMENTARIO DE ProdutosAdmin.razor
     }
 
     private void Cancel() => NavManager.NavigateTo("/admin/produtos");
-} *@
+}

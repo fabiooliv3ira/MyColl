@@ -1,5 +1,6 @@
 ﻿@using MYCOLL.RCL.Entities
 @using MYCOLL.RCL.Services
+@using MYCOLL.RCL.Data.DTO
 @inject CategoriaService CategoriaService
 @inject ProdutoService ProdutoService
 @inject AuthenticacaoService AuthenticacaoService
@@ -7,12 +8,12 @@
 
 @if (produtos != null)
 {
-	<Carousel Title="Recomendados" Type="Big" Products="produtos.ToList()" />
+	<Carousel Title="Recomendados" Type="Big" Products="produtos" />
 }
 
 @code {
 	IEnumerable<Categoria>? categorias;
-	IEnumerable<Produto>? produtos;
+	List<ProdutoDTO>? produtos;
 	protected override async Task OnInitializedAsync()
 	{
 		categorias = await CategoriaService.GetCategorias();

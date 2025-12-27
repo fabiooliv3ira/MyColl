@@ -41,11 +41,10 @@ else
 }
 
 @code {
-    private List<Produto>? produtos;
+    private List<ProdutoDTO>? produtos;
 
     protected override async Task OnInitializedAsync()
     {
-        // Vai buscar os produtos à API quando a página abre
         produtos = await ProdutoService.GetProdutosAsync();
     }
 
@@ -55,12 +54,10 @@ else
         NavManager.NavigateTo($"/produto/{id}");
     }
 
- 
-    
-
     private string? feedback;
 
-    private async Task AddToCart(Produto produto)
+    // Accept DTO
+    private async Task AddToCart(ProdutoDTO produto)
     {
         try
         {
@@ -75,14 +72,7 @@ else
             };
 
             var result = await CarrinhoService.AddItemAsync(item);
-            if (result is null)
-            {
-                feedback = "Falha ao adicionar (ver consola).";
-            }
-            else
-            {
-                feedback = "Adicionado ao carrinho.";
-            }
+            feedback = result is null ? "Falha ao adicionar (ver consola)." : "Adicionado ao carrinho.";
         }
         catch (Exception ex)
         {
