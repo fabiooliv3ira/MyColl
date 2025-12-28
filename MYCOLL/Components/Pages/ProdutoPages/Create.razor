@@ -30,7 +30,17 @@
                 <label for="nome" class="form-label">Nome:</label> 
                 <InputText id="nome" @bind-Value="Produto.Nome" class="form-control" aria-required="true"/> 
                 <ValidationMessage For="() => Produto.Nome" class="text-danger" /> 
-            </div>        
+            </div> 
+            <div class="mb-3">
+                <label for="imagem" class="form-label">Imagem:</label>
+                <InputFile id="imagem" OnChange="OnImageChange" class="form-control"
+                           accept=".png, .jpg, .jpeg" />
+                @if (previewUrl is not null)
+                {
+                    <img src="@previewUrl" style="max-width: 200px; margin-top: 10px" />
+                }
+                <ValidationMessage For="() => Produto.Imagem" class="text-danger" />
+            </div>
             <div class="mb-3">
                 <label for="descricao" class="form-label">Descricao:</label> 
                 <InputText id="descricao" @bind-Value="Produto.Descricao" class="form-control" /> 
@@ -75,18 +85,13 @@
                         <option value="@item.Id">@item.Nome</option>
                     }
                 </InputSelect>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="text-danger">@errorMessage</div>
+                }
                 <ValidationMessage For="() => Produto.SubcategoriaId" class="text-danger" />
             </div>
-            <div class="mb-3">
-                <label for="imagem" class="form-label">Imagem:</label>
-                <InputFile id="imagem" OnChange="OnImageChange" class="form-control"
-                           accept=".png, .jpg, .jpeg" />
-                @if (previewUrl is not null)
-                {
-                    <img src="@previewUrl" style="max-width: 200px; margin-top: 10px" />
-                }
-                <ValidationMessage For="() => Produto.Imagem" class="text-danger" />
-            </div>
+            
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -108,19 +113,33 @@
         NavigationManager.NavigateTo("/produtos");
     }
     private string? previewUrl;
+    private string? errorMessage;
+
     private async Task OnImageChange(InputFileChangeEventArgs e)
     {
-        var file = e.File;
+        try
+        {
+            Console.WriteLine($"File selected: {e.File.Name}, Size: {e.File.Size} bytes");
 
-        using var stream = new MemoryStream();
-        await file.OpenReadStream().CopyToAsync(stream);
-        Produto.Imagem = stream.ToArray();
+            var file = e.File;
+            const long maxFileSize = 10 * 1024 * 1024;
 
-        // Cria pré-visualização
-        using var previewStream = new MemoryStream();
-        await file.OpenReadStream().CopyToAsync(previewStream);
-        var base64 = Convert.ToBase64String(previewStream.ToArray());
-        previewUrl = $"data:{file.ContentType};base64,{base64}";
+            using var stream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: maxFileSize).CopyToAsync(stream);
+
+            Console.WriteLine($"Stream read successfully, size: {stream.Length}");
+
+            Produto.Imagem = stream.ToArray();
+            var base64 = Convert.ToBase64String(Produto.Imagem);
+            previewUrl = $"data:{file.ContentType};base64,{base64}";
+
+            Console.WriteLine("Image preview created");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR in OnImageChange: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
     }
     protected override async Task OnInitializedAsync()
     {
@@ -128,7 +147,6 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        using var context = DbFactory.CreateDbContext();
         selSubCategorias = await SubCategoriaService.GetSubCategorias();
 
         if (user.Identity?.IsAuthenticated == true)

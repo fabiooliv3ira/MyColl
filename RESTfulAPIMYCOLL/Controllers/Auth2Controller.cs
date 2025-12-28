@@ -16,10 +16,10 @@ namespace RESTfulAPIMYCOLL.Controllers
     [ApiController]
     public class Auth2Controller : ControllerBase
     {
-        private UserManager<ApplicationUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
-        private SignInManager<ApplicationUser> _signInManager;
-        private IConfiguration _config;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConfiguration _config;
         public Auth2Controller(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,

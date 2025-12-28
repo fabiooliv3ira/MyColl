@@ -9,7 +9,6 @@ namespace RESTfulAPIMYCOLL.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")] // Só utilizadores autenticados podem mexer no carrinho
     public class ItemCarrinhoController : ControllerBase
 	{
 		private readonly IItemCarrinhoRepository _itemRepository;

@@ -7,23 +7,36 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container - SINGLE registration with hub options
+// At the top with other services (around line 10)
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// ADD THESE TWO CRITICAL LINES:
-builder.Services.AddHttpContextAccessor(); // ← For HttpContext in services
+// Remove the AddSignalR() call and use this instead:
+builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(options =>
+{
+    options.DetailedErrors = true;
+    options.MaxBufferedUnacknowledgedRenderBatches = 20;
+    options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.SignalR.HubOptions>(options =>
+{
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-// ADD THESE SESSION SERVICES:
-builder.Services.AddDistributedMemoryCache(); // Required for session
+// Session services
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(60);
@@ -60,9 +73,6 @@ builder.Services.AddScoped<MYCOLL.Services.TokenStorageService>();
 builder.Services.AddScoped<MYCOLL.Services.AuthenticacaoService>();
 builder.Services.AddTransient<MYCOLL.Services.JwtAuthenticationHandler>();
 
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddCascadingAuthenticationState();
-
 builder.Services.AddHttpClient("api", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7077");
@@ -78,6 +88,7 @@ builder.Services.AddScoped<MYCOLL.Services.ProdutoService>();
 
 var app = builder.Build();
 
+// Removed duplicate IsDevelopment block
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -91,7 +102,6 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -108,18 +118,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()

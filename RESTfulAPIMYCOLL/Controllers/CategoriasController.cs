@@ -34,6 +34,7 @@ namespace RESTfulAPIMYCOLL.Controllers
 		}
 
 		// GET: api/Categorias
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
 		{

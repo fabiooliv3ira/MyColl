@@ -20,15 +20,16 @@ namespace RESTfulAPIMYCOLL.Controllers
 			_context = context;
 			_produtoRepository = produtoRepository;
 		}
-
-		[HttpGet]
+        [AllowAnonymous]
+        [HttpGet]
 		public async Task<IEnumerable<Produto>> Get()
 		{
 			return await _produtoRepository.ObterTodosProdutosAsync();
 		}
 
-		// GET api/<ProdutosController>/5
-		[HttpGet("{id}")]
+        // GET api/<ProdutosController>/5
+        [AllowAnonymous]
+        [HttpGet("{id}")]
 		public async Task<Produto> Get(int id)
 		{
 			return await _produtoRepository.ObterDetalheProdutoAsync(id);
