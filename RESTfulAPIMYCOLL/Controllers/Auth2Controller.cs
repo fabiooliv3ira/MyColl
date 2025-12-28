@@ -45,9 +45,7 @@ namespace RESTfulAPIMYCOLL.Controllers
             if (!result.Succeeded) 
                 return BadRequest(ModelState);
             var token = GenerateJwtToken(user);
-
             
-
             return Ok(
                 new AuthResponseDto
                 {

@@ -85,8 +85,9 @@
 
             if (results.Success)
             {
+
                 // Redireciona para a Home ou ReturnUrl
-                NavigationManager.NavigateTo(ReturnUrl ?? "/");
+                NavigationManager.NavigateTo(ReturnUrl ?? "/home");
             }
             else
             {

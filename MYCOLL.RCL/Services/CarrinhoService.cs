@@ -12,37 +12,21 @@ namespace MYCOLL.RCL.Services
     public class CarrinhoService : ICarrinhoService
     {
         private readonly HttpClient _http;
-        private readonly ILocalStorageService _localStorage;
 
-        public CarrinhoService(HttpClient http, ILocalStorageService localStorage)
+        public CarrinhoService(HttpClient http)
         {
             _http = http;
-            _localStorage = localStorage;
-        }
-
-        private async Task EnsureAuthHeaderAsync()
-        {
-            var token = await _localStorage.GetItemAsync<string>("authToken");
-            if (!string.IsNullOrWhiteSpace(token))
-            {
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
-            else
-            {
-                _http.DefaultRequestHeaders.Authorization = null;
-            }
         }
 
         public async Task<IEnumerable<ItemCarrinhoDTO>> GetMyCarrinhoAsync()
         {
-            await EnsureAuthHeaderAsync();
+ 
             var resp = await _http.GetFromJsonAsync<IEnumerable<ItemCarrinhoDTO>>("api/ItemCarrinho/GetMyCarrinho");
             return resp ?? new List<ItemCarrinhoDTO>();
         }
 
         public async Task<ItemCarrinhoDTO?> AddItemAsync(ItemCarrinhoDTO item)
         {
-            await EnsureAuthHeaderAsync();
             var response = await _http.PostAsJsonAsync("api/ItemCarrinho", item);
             if (response.IsSuccessStatusCode)
             {
@@ -55,14 +39,12 @@ namespace MYCOLL.RCL.Services
 
         public async Task<bool> RemoveItemAsync(int itemId)
         {
-            await EnsureAuthHeaderAsync();
             var response = await _http.DeleteAsync($"api/ItemCarrinho/{itemId}");
             return response.IsSuccessStatusCode;
         }
 
         public async Task<EncomendaDTO?> CreateEncomendaAsync(EncomendaDTO encomenda)
         {
-            await EnsureAuthHeaderAsync();
             var response = await _http.PostAsJsonAsync("api/Encomenda", encomenda);
             if (response.IsSuccessStatusCode)
             {

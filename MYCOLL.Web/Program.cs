@@ -27,14 +27,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddHttpClient("api", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7077/");
-
-    //client.DefaultRequestHeaders.Accept.Add(
-    //    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-});
-
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddAuthentication(options =>
@@ -60,16 +52,23 @@ builder.Services.AddScoped<SubCategoriaService>();
 // 1. Registrar el servicio concreto primero
 builder.Services.AddScoped<AuthenticacaoService>();
 
+builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
+
 // 2. Usar la misma instancia para el AuthenticationStateProvider
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<AuthenticacaoService>());
 
-builder.Services.AddHttpClient<ICarrinhoService, CarrinhoService>(client =>
+builder.Services.AddHttpClient("api", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7054/"); // ajusta para a tua API
+    client.BaseAddress = new Uri("https://localhost:7077/");
     client.DefaultRequestHeaders.Accept.Add(
         new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
 
+builder.Services.AddScoped<HttpClient>(provider =>
+{
+    var factory = provider.GetRequiredService<IHttpClientFactory>();
+    return factory.CreateClient("api");
 });
 
 var app = builder.Build();

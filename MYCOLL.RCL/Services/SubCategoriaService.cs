@@ -6,9 +6,9 @@ namespace MYCOLL.RCL.Services
     public class SubCategoriaService
     {
         private readonly HttpClient http;
-        public SubCategoriaService(IHttpClientFactory factory)
+        public SubCategoriaService(HttpClient _http)
         {
-            this.http = factory.CreateClient("api");
+            this.http = _http;
         }
         public async Task<IEnumerable<SubCategoria>> GetSubCategorias()
         {

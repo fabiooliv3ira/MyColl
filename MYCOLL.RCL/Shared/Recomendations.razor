@@ -10,6 +10,10 @@
 {
 	<Carousel Title="Recomendados" Type="Big" Products="produtos" />
 }
+else
+{
+	<h3>Nenhum produto disponivel!</h3>
+}
 
 @code {
 	IEnumerable<Categoria>? categorias;
@@ -21,10 +25,14 @@
 		Random rnd = new Random();
 		if (categorias is not null)
 		{
-			int number = rnd.Next(1, categorias.Count());
-			var categoriaSelecionada = categorias.ElementAt(number);
-			produtos = await ProdutoService.GetProdutosByCategoria(categoriaSelecionada.Id);
+			var count = categorias.Count();
+
+		if(count > 0)
+			{
+				int number = rnd.Next(0, count - 1);
+				var categoriaSelecionada = categorias.ElementAt(number);
+				produtos = await ProdutoService.GetProdutosByCategoria(categoriaSelecionada.Id);
+			}
 		}
-		
 	}
 }

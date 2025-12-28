@@ -15,9 +15,9 @@ namespace MYCOLL.RCL.Services
         private readonly HttpClient http;
         private readonly ILocalStorageService _localStorage;
 
-        public AuthenticacaoService(IHttpClientFactory factory, ILocalStorageService localStorage)
+        public AuthenticacaoService(HttpClient _http, ILocalStorageService localStorage)
         {
-            http = factory.CreateClient("api");
+            http = _http;
             _localStorage = localStorage;
         }
 

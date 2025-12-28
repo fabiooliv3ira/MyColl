@@ -9,9 +9,9 @@ namespace MYCOLL.RCL.Services
     {
         private readonly HttpClient http;
 
-        public CategoriaService(IHttpClientFactory factory)
+        public CategoriaService(HttpClient _http)
         {
-            http = factory.CreateClient("api");
+            http = _http;
         }
 
         public async Task<IEnumerable<Categoria>> GetCategorias()
