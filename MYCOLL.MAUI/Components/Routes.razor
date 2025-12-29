@@ -1,6 +1,66 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using MYCOLL.RCL.Shared
+@using MYCOLL.RCL.Pages
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(MauiProgram).Assembly"
+            AdditionalAssemblies="new[] { typeof(MainLayout).Assembly }">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    @if (context.User?.Identity?.IsAuthenticated != true)
+                    {
+                        <RedirectToLogin />
+                    }
+                </NotAuthorized>
+                <Authorizing>
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div style="background-color: red; color: white; padding: 20px;">
+                    <h1>404 - Page Not Found</h1>
+                    <p>The page you're looking for doesn't exist.</p>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+@code {
+    private class RedirectToLogin : ComponentBase
+    {
+        [Inject] private NavigationManager? Navigation { get; set; }
+
+        protected override void OnInitialized()
+        {
+            Navigation?.NavigateTo("/Account/login", forceLoad: true);
+        }
+    }
+
+    private class UnauthorizedAccess : ComponentBase
+    {
+        private RenderFragment Content => builder =>
+        {
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", "alert alert-danger m-3");
+            builder.OpenElement(2, "h4");
+            builder.AddContent(3, "Access Denied");
+            builder.CloseElement();
+            builder.OpenElement(4, "p");
+            builder.AddContent(5, "You don't have permission to access this page.");
+            builder.CloseElement();
+            builder.CloseElement();
+        };
+
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            Content(builder);
+        }
+    }
+}

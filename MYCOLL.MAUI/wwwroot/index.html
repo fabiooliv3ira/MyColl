@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>MYCOLL.MAUI</title>
     <base href="/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+
+    <!-- RCL CSS Files -->
+    <link rel="stylesheet" href="_content/MYCOLL.RCL/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/MYCOLL.RCL/app.css" />
+
+    <!-- MAUI CSS -->
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="MYCOLL.MAUI.styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
 </head>
 
 <body>
-
-    <div class="status-bar-safe-area"></div>
-
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div style="position:absolute; top:30%; width:100%; text-align:center">
+            <p style="font-size:1.5rem">
+                <em>Loading...</em>
+            </p>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -23,8 +30,7 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <!-- Blazor WebView script -->
     <script src="_framework/blazor.webview.js" autostart="false"></script>
-
 </body>
-
 </html>
