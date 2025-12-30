@@ -22,6 +22,7 @@ namespace RESTfulAPIMYCOLL.Controllers
 		}
 		// GET: api/SubCategorias
 		[HttpGet]
+		[AllowAnonymous]
 		public async Task<IEnumerable<SubCategoria>> GetSubCategorias()
 		{
 			return await _subCategoriasRepository.GetAllSubCategoriasAsync();

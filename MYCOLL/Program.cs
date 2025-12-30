@@ -75,7 +75,7 @@ builder.Services.AddTransient<MYCOLL.Services.JwtAuthenticationHandler>();
 
 builder.Services.AddHttpClient("api", client =>
 {
-    client.BaseAddress = new Uri("https://7c17320m-7077.uks1.devtunnels.ms");
+    client.BaseAddress = new Uri("https://dxbmlrv7-7077.uks1.devtunnels.ms");
     client.DefaultRequestHeaders.Accept.Add(
         new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 })

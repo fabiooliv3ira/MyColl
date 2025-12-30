@@ -29,7 +29,7 @@ else
 
 		if(count > 0)
 			{
-				int number = rnd.Next(0, count - 1);
+				int number = rnd.Next(0, count);
 				var categoriaSelecionada = categorias.ElementAt(number);
 				produtos = await ProdutoService.GetProdutosByCategoria(categoriaSelecionada.Id);
 			}
