@@ -1,23 +1,60 @@
 @page "/admin/produtos/edit/{Id:int?}"
 @using MYCOLL.RCL.Data.DTO
+@using MYCOLL.RCL.Services
 @inject MYCOLL.RCL.Data.Interfaces.IProdutoService ProdutoService
+@inject CategoriaService CategoriaService
 @inject NavigationManager NavManager
 
 <AuthorizeView>
     <Authorized Context="authCtx">
-        <EditForm Model="produto" OnValidSubmit="Save" Context="editCtx">
+        <h3>@(Id == null ? "Novo Produto" : "Editar Produto")</h3>
+
+        <EditForm Model="produto" OnValidSubmit="Save">
             <DataAnnotationsValidator />
 
-            <InputText @bind-Value="produto.Nome" class="form-control" />
-            <InputTextArea @bind-Value="produto.Descricao" class="form-control mt-2" />
-            <InputNumber @bind-Value="produto.Preco" class="form-control mt-2" />
+            <div class="mb-3">
+                <label>Nome</label>
+                <InputText @bind-Value="produto.Nome" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Descrição</label>
+                <InputTextArea @bind-Value="produto.Descricao" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Preço</label>
+                <InputNumber @bind-Value="produto.Preco" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Stock</label>
+                <InputNumber @bind-Value="produto.Stock" class="form-control" />
+            </div>
+
+            <!-- Seleção de Categoria (Simplificado: assume SubcategoriaId direto) -->
+            <div class="mb-3">
+                <label>Subcategoria ID (Temporário)</label>
+                <InputNumber @bind-Value="produto.SubcategoriaId" class="form-control" />
+                <!-- Futuramente podes meter aqui um <select> com as subcategorias -->
+            </div>
+
+            <!-- Upload de Imagem -->
+            <div class="mb-3">
+                <label>Imagem</label>
+                <InputFile OnChange="CarregarImagem" class="form-control" />
+                @if (produto.Imagem != null)
+                {
+                    <p class="mt-2 text-success">Imagem carregada!</p>
+                }
+            </div>
 
             <button class="btn btn-primary mt-3" type="submit">Guardar</button>
             <button class="btn btn-secondary mt-3" type="button" @onclick="Cancel">Cancelar</button>
         </EditForm>
     </Authorized>
     <NotAuthorized>
-        <p>Acesso restrito a funcionários.</p>
+        <p>Acesso negado.</p>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -32,20 +69,40 @@
             var existing = await ProdutoService.GetProdutoByIdAsync(Id.Value);
             if (existing != null) produto = existing;
         }
+        else
+        {
+            // Valores padrão para novo produto
+            produto.EstadoProduto = "Pendente"; // Fornecedores criam como Pendente
+            produto.Tipo = "Venda";
+            produto.SubcategoriaId = 1; // Temporário para não dar erro de FK
+        }
+    }
+
+    private async Task CarregarImagem(InputFileChangeEventArgs e)
+    {
+        var ficheiro = e.File;
+        // Limite de 5MB
+        if (ficheiro.Size > 5242880) return;
+
+        var buffer = new byte[ficheiro.Size];
+        await ficheiro.OpenReadStream(5242880).ReadAsync(buffer);
+
+        produto.Imagem = buffer;
+        // Opcional: Gerar URL base64 para preview imediato se quiseres
     }
 
     private async Task Save()
     {
+        // ... (código igual ao teu) ...
         if (Id == null)
         {
-            var created = await ProdutoService.CreateProdutoAsync(produto);
-            if (created != null) NavManager.NavigateTo("/admin/produtos");
+            await ProdutoService.CreateProdutoAsync(produto);
         }
         else
         {
-            var updated = await ProdutoService.UpdateProdutoAsync(produto);
-            if (updated != null) NavManager.NavigateTo("/admin/produtos");
+            await ProdutoService.UpdateProdutoAsync(produto);
         }
+        NavManager.NavigateTo("/admin/produtos");
     }
 
     private void Cancel() => NavManager.NavigateTo("/admin/produtos");

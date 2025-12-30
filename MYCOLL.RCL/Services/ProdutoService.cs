@@ -84,5 +84,19 @@ namespace MYCOLL.RCL.Services
                 return new List<ProdutoDTO>();
             }
         }
-    }
+
+		public async Task<List<ProdutoDTO>> GetMeusProdutosAsync()
+		{
+			try
+			{
+				var result = await _http.GetFromJsonAsync<List<ProdutoDTO>>("api/Produtos/Meus");
+				return result ?? new List<ProdutoDTO>();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Erro ao obter meus produtos: {ex.Message}");
+				return new List<ProdutoDTO>();
+			}
+		}
+	}
 }

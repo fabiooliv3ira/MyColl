@@ -46,7 +46,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddScoped<ProdutoService>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<SubCategoriaService>();
 // 1. Registrar el servicio concreto primero
@@ -70,6 +70,12 @@ builder.Services.AddScoped<HttpClient>(provider =>
     var factory = provider.GetRequiredService<IHttpClientFactory>();
     return factory.CreateClient("api");
 });
+
+
+// Enable detailed errors for debugging
+builder.Services.AddRazorComponents()
+	.AddInteractiveServerComponents(options => options.DetailedErrors = true); 
+
 
 var app = builder.Build();
 

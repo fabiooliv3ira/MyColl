@@ -12,5 +12,7 @@ namespace MYCOLL.RCL.Data.Interfaces
         Task<ProdutoDTO?> UpdateProdutoAsync(ProdutoDTO produto);
         Task<bool> DeleteProdutoAsync(int id);
         Task<List<ProdutoDTO>> GetProdutosByCategoria(int categoriaId);
-    }
+        Task<List<ProdutoDTO>> GetMeusProdutosAsync();
+
+	}
 }

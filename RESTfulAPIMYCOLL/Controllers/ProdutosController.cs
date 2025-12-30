@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTfulAPIMYCOLL.Data;
-using RESTfulAPIMYCOLL.Repositories;
 using RESTfulAPIMYCOLL.Entities;
+using RESTfulAPIMYCOLL.Repositories;
+using System.Security.Claims;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RESTfulAPIMYCOLL.Controllers
@@ -72,5 +73,23 @@ namespace RESTfulAPIMYCOLL.Controllers
 		{
 			return await _produtoRepository.ObterProdutoPorFuncionario(id);
         }
-    }
+
+		[HttpGet("Meus")]
+		[Authorize(Roles = "Fornecedor")] // Só fornecedores podem chamar este
+		public async Task<ActionResult<IEnumerable<Produto>>> GetMeusProdutos()
+		{
+			// Obtém o ID do utilizador logado a partir do Token
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (string.IsNullOrEmpty(userId))
+			{
+				return Unauthorized();
+			}
+
+			var produtos = await _produtoRepository.ObterProdutoPorFuncionario(userId);
+			
+
+			return Ok(produtos);
+		}
+	}
 }

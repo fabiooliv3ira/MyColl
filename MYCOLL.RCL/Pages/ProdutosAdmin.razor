@@ -1,14 +1,19 @@
-
-
-
-
 @page "/admin/produtos"
 @using MYCOLL.RCL.Data.DTO
 @using MYCOLL.RCL.Data.Interfaces
 @inject IProdutoService ProdutoService
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
 
-<AuthorizeView Roles="Employee">
+@if (!string.IsNullOrEmpty(erroFatal))
+{
+    <div class="alert alert-danger">
+        <h4>Ocorreu um erro!</h4>
+        <pre>@erroFatal</pre>
+    </div>
+}
+
+<AuthorizeView>
     <Authorized>
         <h3>Gestão de Produtos</h3>
 
@@ -25,13 +30,14 @@
         else
         {
             <table class="table">
-                <thead><tr><th>Nome</th><th>Preço</th><th></th></tr></thead>
+                <thead><tr><th>Nome</th><th>Preço</th><th>Estado</th><th></th></tr></thead>
                 <tbody>
                 @foreach (var p in produtos)
                 {
                     <tr>
                         <td>@p.Nome</td>
                         <td>@p.Preco.ToString("C")</td>
+                        <td>@p.EstadoProduto</td> 
                         <td>
                             <button class="btn btn-sm btn-secondary" @onclick="() => Edit(p.Id)">Editar</button>
                             <button class="btn btn-sm btn-danger" @onclick="() => Delete(p.Id)">Apagar</button>
@@ -43,16 +49,45 @@
         }
     </Authorized>
     <NotAuthorized>
-        <p>Acesso restrito a funcionários.</p>
+        <p>Acesso Restrito.</p>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     private List<ProdutoDTO>? produtos;
 
+    private string? erroFatal; // Variável para guardar o erro
+
     protected override async Task OnInitializedAsync()
     {
-        produtos = await ProdutoService.GetProdutosAsync();
+        try
+        {
+            // 1. Verificar autenticação com segurança
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
+            {
+                erroFatal = "Utilizador não autenticado.";
+                return;
+            }
+
+            // 2. Chamar o serviço
+            if (user.IsInRole("Fornecedor"))
+            {
+                produtos = await ProdutoService.GetMeusProdutosAsync();
+            }
+            else
+            {
+                produtos = await ProdutoService.GetProdutosAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Captura o erro e mostra no ecrã em vez de crashar o circuito
+            erroFatal = $"ERRO CRÍTICO: {ex.Message} \n Stack: {ex.StackTrace}";
+            Console.WriteLine(erroFatal); // Escreve também na consola
+        }
     }
 
     private void CreateNovo() => NavManager.NavigateTo("/admin/produtos/edit");

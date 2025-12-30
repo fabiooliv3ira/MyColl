@@ -38,9 +38,9 @@ namespace MYCOLL.MAUI
                 return factory.CreateClient("api");
             });
 
-            // Register RCL services
-            builder.Services.AddScoped<ProdutoService>();
-            builder.Services.AddScoped<CategoriaService>();
+			// Register RCL services
+			builder.Services.AddScoped<IProdutoService, ProdutoService>();
+			builder.Services.AddScoped<CategoriaService>();
             builder.Services.AddScoped<SubCategoriaService>();
             builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
 
