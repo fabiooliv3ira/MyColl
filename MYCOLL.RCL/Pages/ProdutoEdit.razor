@@ -93,7 +93,11 @@
 
     private async Task Save()
     {
-        // ... (código igual ao teu) ...
+        if (string.IsNullOrEmpty(produto.URLImagem))
+        {
+            produto.URLImagem = "temp.jpg"; // Para substituir depois com a imagem real
+        }
+
         if (Id == null)
         {
             await ProdutoService.CreateProdutoAsync(produto);

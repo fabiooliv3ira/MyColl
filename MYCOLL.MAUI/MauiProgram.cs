@@ -25,7 +25,7 @@ namespace MYCOLL.MAUI
             // STEP 1: Register IHttpClientFactory with a named client
             builder.Services.AddHttpClient("api", client =>
             {
-                client.BaseAddress = new Uri("https://qtkht8x7-7077.uks1.devtunnels.ms");
+                client.BaseAddress = new Uri("https://dxbmlrv7-7077.uks1.devtunnels.ms");
                 client.Timeout = TimeSpan.FromSeconds(120);
                 client.DefaultRequestHeaders.Accept.Add(
                     new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));

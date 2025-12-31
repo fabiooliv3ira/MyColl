@@ -50,8 +50,31 @@ namespace RESTfulAPIMYCOLL.Controllers
 		}
 
 		[HttpPost]
-		public async Task<Produto> Post([FromBody] Produto produto)
+		[Authorize(Roles = "Fornecedor, Admin")]
+		public async Task<ActionResult<Produto>> Post([FromBody] ProdutoInputModel input)
 		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (string.IsNullOrEmpty(userId))
+			{
+				return Unauthorized("Token inválido ou sem ID de utilizador.");
+			}
+
+			var produto = new Produto
+			{
+				Nome = input.Nome,
+				Descricao = input.Descricao,
+				Preco = input.Preco,
+				Stock = input.Stock,
+				SubcategoriaId = input.SubcategoriaId,
+				Imagem = input.Imagem,
+
+				// Campos gerados pela API
+				ApplicationUserId = userId,
+				EstadoProduto = "Ativo",
+				Tipo = "Venda",
+				URLImagem = "temp.png" // Placeholder
+			};
+
 			return await _produtoRepository.AdicionarProdutoAsync(produto);
 		}
 
@@ -90,6 +113,17 @@ namespace RESTfulAPIMYCOLL.Controllers
 			
 
 			return Ok(produtos);
+		}
+
+		// Classe auxiliar apenas para receber os dados do Frontend sem validar o User
+		public class ProdutoInputModel
+		{
+			public string Nome { get; set; } = string.Empty;
+			public string? Descricao { get; set; }
+			public decimal Preco { get; set; }
+			public int Stock { get; set; }
+			public int SubcategoriaId { get; set; }
+			public byte[]? Imagem { get; set; } // Não incluí ApplicationUserId nem URLImagem aqui porque a API gera-os
 		}
 	}
 }

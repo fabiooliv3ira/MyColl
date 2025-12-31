@@ -5,7 +5,7 @@
 namespace MYCOLL.Migrations
 {
     /// <inheritdoc />
-    public partial class inicial7 : Migration
+    public partial class NovaDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,9 +22,9 @@ namespace MYCOLL.Migrations
                 name: "EncomendaId",
                 table: "ItensCarrinho");
 
-            //migrationBuilder.DropColumn(
-            //    name: "PrecoUnitario",
-            //    table: "ItensCarrinho");
+            migrationBuilder.DropColumn(
+                name: "PrecoUnitario",
+                table: "ItensCarrinho");
 
             migrationBuilder.RenameColumn(
                 name: "UserId",
