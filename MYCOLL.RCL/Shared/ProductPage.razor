@@ -1,0 +1,127 @@
+﻿@page "/productpage/{productId:int}"
+@using MYCOLL.RCL.Data.Interfaces
+@using MYCOLL.RCL.Services
+
+@inject NavigationManager NavigationManager
+@inject IProdutoService ProdutoService
+@inject ICarrinhoService CarrinhoService
+
+<h3>Product Page</h3>
+<p>Product ID: @ProductId</p>
+
+<PageTitle>Criar produto</PageTitle>
+
+
+<h2>Produto</h2>
+<hr />
+@if (produto is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="mb-3">
+        <label for="imagem" class="form-label">Imagem:</label>
+        @if (previewUrl is not null)
+        {
+            <img src="@previewUrl" style="max-width: 200px; margin-top: 10px" />
+        }
+    </div>
+    <dl class="row">
+        <dt class="col-sm-2">Nome</dt>
+        <dd class="col-sm-10">@produto.Nome</dd>
+        <dt class="col-sm-2">Descricao</dt>
+        <dd class="col-sm-10">@produto.Descricao</dd>
+        <dt class="col-sm-2">Preco</dt>
+        <dd class="col-sm-10">@produto.Preco</dd>
+        
+    </dl>
+    <div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="carrinhoDTO" OnValidSubmit="AddToCart" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="Quantidade" class="form-label">Quantidade:</label> 
+                <InputNumber id="Quantidade" @bind-Value="carrinhoDTO.Quantidade" class="form-control" aria-required="true"/> 
+                    <ValidationMessage For="() => carrinhoDTO.Quantidade" class="text-danger" />
+            </div> 
+            <button type="submit" class="btn btn-primary">Add to cart</button>
+        </EditForm>
+    </div>
+</div>
+
+}
+
+@code {
+    [Parameter]
+    public int ProductId { get; set; } = -1;
+
+    [SupplyParameterFromForm]
+    private ItemCarrinhoDTO carrinhoDTO { get; set; } = new();
+
+    private ProdutoDTO? produto;
+    private string? previewUrl;
+
+    private string? errorMessage;  
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductId == -1)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        try
+        {
+            produto = await ProdutoService.GetProdutoByIdAsync(ProductId);
+            if (produto == null)
+            {
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+
+            if (produto.Imagem != null)
+            {
+                var base64 = Convert.ToBase64String(produto.Imagem);
+                var mimeType = GetImageMimeType(produto.Imagem);
+                previewUrl = $"data:{mimeType};base64,{base64}";
+            }
+
+        }
+        catch
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        await base.OnInitializedAsync();
+    }
+    public static string GetImageMimeType(byte[] imageBytes)
+    {
+        // Check if PNG (starts with 89 50 4E 47)
+        if (imageBytes != null && imageBytes.Length >= 4 &&
+            imageBytes[0] == 0x89 &&
+            imageBytes[1] == 0x50 &&
+            imageBytes[2] == 0x4E &&
+            imageBytes[3] == 0x47)
+        {
+            return "image/png";
+        }
+
+        return "image/jpeg"; // Default to JPEG for JPG/JPEG
+    }
+    private async Task AddToCart()
+    {
+        if (produto != null)
+        {
+            carrinhoDTO.ProdutoId = produto.Id;
+            carrinhoDTO.Subtotal = produto.Preco * carrinhoDTO.Quantidade;
+			carrinhoDTO.EncomendaId = -1; // Indica que ainda não está associado a uma encomenda
+            await CarrinhoService.AddItemAsync(carrinhoDTO);
+            NavigationManager.NavigateTo("/carrinho");
+        }
+	}
+}

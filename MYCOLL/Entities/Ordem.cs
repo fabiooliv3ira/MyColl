@@ -1,22 +1,16 @@
-﻿using MYCOLL.RCL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MYCOLL.RCL.Data.DTO
+﻿namespace MYCOLL.Entities
 {
-	public class ItemCarrinhoDTO
-	{
+    public class Ordem
+    {
         public int Id { get; set; }
         public int Quantidade { get; set; }
         public decimal Subtotal { get; set; }
+
         // FKs
         public int EncomendaId { get; set; }
         public Encomenda? Encomenda { get; set; }
+
         public int ProdutoId { get; set; }
         public Produto? Produto { get; set; }
-        public String? ApplicationUserId { get; set; }
     }
 }

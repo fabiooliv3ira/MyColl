@@ -44,14 +44,9 @@ namespace RESTfulAPIMYCOLL.Controllers
 			}
 
 			// Dados automáticos do sistema
-			encomenda.UserId = GetCurrentUserId();
+			encomenda.ApplicationUserId = GetCurrentUserId();
 			encomenda.Data = DateTime.UtcNow;
 			encomenda.Estado = "NaoPaga";
-
-			if (encomenda.ItensCarrinho == null || !encomenda.ItensCarrinho.Any())
-			{
-				return BadRequest("A encomenda deve conter pelo menos um item.");
-			}
 
 			try
 			{
@@ -85,7 +80,7 @@ namespace RESTfulAPIMYCOLL.Controllers
 			var roles = await _userManager.GetRolesAsync(currentUser!); // Assuming user will not be null if authenticated
 
 			// Permite acesso se for o proprietário da encomenda OU um Admin/Funcionario
-			if (encomenda.UserId == currentUserId || roles.Contains(TipoUtilizador.admin) || roles.Contains(TipoUtilizador.funcionario))
+			if (encomenda.ApplicationUserId == currentUserId || roles.Contains(TipoUtilizador.admin) || roles.Contains(TipoUtilizador.funcionario))
 			{
 				return Ok(encomenda);
 			}

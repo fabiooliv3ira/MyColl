@@ -27,9 +27,6 @@ namespace RESTfulAPIMYCOLL.Controllers
 			var item = await _itemRepository.GetItemCarrinhoAsync(id);
 			if (item == null) return NotFound();
 
-			// Segurança: Verificar se o item pertence ao utilizador logado
-			// Nota: O GetItemCarrinhoAsync já faz include do Produto, mas precisamos saber o User da Encomenda
-			// Poderíamos fazer isso no repo, mas aqui usamos o helper
 			var ownerId = await _itemRepository.GetUserIdByItemCarrinhoIdAsync(id);
 			var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -46,28 +43,17 @@ namespace RESTfulAPIMYCOLL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<ItemCarrinho>> AddItemCarrinho(ItemCarrinho item)
 		{
-			// 1. Validar inputs básicos
+
 			if (item.Quantidade <= 0) return BadRequest("A quantidade deve ser maior que zero.");
-
-			// 2. Segurança: Verificar se a EncomendaId pertence ao utilizador logado
-			var encomenda = await _encomendaRepository.GetEncomendaAsync(item.EncomendaId);
-			if (encomenda == null) return NotFound("Encomenda não encontrada.");
-
-			var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (encomenda.UserId != currentUserId)
-			{
-				return BadRequest("Não pode adicionar itens a uma encomenda que não é sua.");
-			}
-
-			// 3. Chamar o repositório que contém a lógica de "Add or Update"
 			try
 			{
-				var itemAtualizado = await _itemRepository.AddOrUpdateItemCarrinhoAsync(item);
+				item.ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var itemAtualizado = await _itemRepository.AddOrUpdateItemCarrinhoAsync(item);
 				return Ok(itemAtualizado);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message); // Ex: Produto não encontrado
+				return BadRequest(ex.Message);
 			}
 		}
 

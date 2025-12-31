@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using RESTfulAPIMYCOLL.Entities;
+using System.Text.Json.Serialization;
 
 namespace RESTfulAPIMYCOLL.Entities
 {
@@ -10,5 +11,5 @@ namespace RESTfulAPIMYCOLL.Entities
 		public int CategoriaId { get; set; }
 		[JsonIgnore]
         public Categoria? categoria { get; set; }
-}
+	}
 }

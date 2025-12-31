@@ -32,7 +32,7 @@ namespace RESTfulAPIMYCOLL.Controllers
 			if (encomenda == null) return NotFound("Encomenda não encontrada.");
 
 			var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (encomenda.UserId != currentUserId)
+			if (encomenda.ApplicationUserId != currentUserId)
 			{
 				return BadRequest("Não pode pagar uma encomenda que não é sua.");
 			}
@@ -64,7 +64,7 @@ namespace RESTfulAPIMYCOLL.Controllers
 			// 2. Verificar permissões
 			var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			// Nota: Precisamos do Include na Encomenda feito no Repository para aceder ao UserId
-			if (pagamento.Encomenda != null && pagamento.Encomenda.UserId != currentUserId)
+			if (pagamento.Encomenda != null && pagamento.Encomenda.ApplicationUserId != currentUserId)
 			{
 				return Forbid();
 			}
@@ -86,7 +86,7 @@ namespace RESTfulAPIMYCOLL.Controllers
 			if (encomenda == null) return NotFound();
 
 			var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (encomenda.UserId != currentUserId && !User.IsInRole(TipoUtilizador.admin))
+			if (encomenda.ApplicationUserId != currentUserId && !User.IsInRole(TipoUtilizador.admin))
 			{
 				return Forbid();
 			}

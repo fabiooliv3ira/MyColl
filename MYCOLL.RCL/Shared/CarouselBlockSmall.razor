@@ -1,15 +1,26 @@
 ﻿@using MYCOLL.RCL.Entities
+@inject NavigationManager NavigationManager
 @code {
     [Parameter]
 	[EditorRequired]
     public ProdutoDTO Product { get; set; }
 }
-<div class="product-card">
+<div class="product-card" @onclick="sendToProductPage">
     <img src="@Product.URLImagem" alt="@Product.Nome" />
     <div class="overlay">
         <span class="title">@Product.Nome</span>
     </div>
 </div>
+
+@code {
+    void sendToProductPage()
+    {
+        var productId = Product.Id;
+        var url = $"/productpage/{productId}";
+        NavigationManager.NavigateTo(url);
+    }
+   
+}
 
 <style>
     .product-card {

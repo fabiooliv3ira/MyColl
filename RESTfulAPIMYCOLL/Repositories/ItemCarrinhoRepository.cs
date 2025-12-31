@@ -25,7 +25,7 @@ namespace RESTfulAPIMYCOLL.Repositories
 		{
 			// 1. Verificar se este produto já existe nesta encomenda específica
 			var itemExistente = await _context.ItensCarrinho
-				.FirstOrDefaultAsync(i => i.EncomendaId == item.EncomendaId && i.ProdutoId == item.ProdutoId);
+				.FirstOrDefaultAsync(i => i.ApplicationUserId == item.ApplicationUserId && i.ProdutoId == item.ProdutoId);
 
 			// Vamos buscar o preço do produto para garantir que o Subtotal fica correto
 			var produto = await _context.Produtos.FindAsync(item.ProdutoId);
@@ -46,9 +46,6 @@ namespace RESTfulAPIMYCOLL.Repositories
 			}
 			else
 			{
-				// NÃO EXISTE: Calcular Subtotal inicial e Adicionar
-				item.Subtotal = item.Quantidade * produto.Preco;
-
 				_context.ItensCarrinho.Add(item);
 				await _context.SaveChangesAsync();
 				return item;
@@ -69,18 +66,16 @@ namespace RESTfulAPIMYCOLL.Repositories
 		public async Task<string?> GetUserIdByItemCarrinhoIdAsync(int itemCarrinhoId)
 		{
 			var item = await _context.ItensCarrinho
-				.Include(i => i.Encomenda)
 				.FirstOrDefaultAsync(i => i.Id == itemCarrinhoId);
 
-			return item?.Encomenda?.UserId;
+			return item?.ApplicationUserId;
 		}
 
 		public async Task<IEnumerable<ItemCarrinho>> GetItensCarrinhoByUserIdAsync(string userId)
 		{
 			return await _context.ItensCarrinho
-				.Include(i => i.Produto) // Traz os detalhes do produto (Nome, Preço, Imagem)
-				.Include(i => i.Encomenda) // Traz a encomenda para verificar o Estado
-				.Where(i => i.Encomenda.UserId == userId)
+				.Include(i => i.Produto) 
+				.Where(i => i.ApplicationUserId == userId)
 				.ToListAsync();
 		}
 	}

@@ -60,7 +60,7 @@ namespace RESTfulAPIMYCOLL.Repositories
 		{
 			return await _context.Pagamentos
 				.Include(p => p.Encomenda)
-				.Where(p => p.Encomenda.UserId == userId)
+				.Where(p => p.Encomenda.ApplicationUserId == userId)
 				.OrderByDescending(p => p.DataPagamento)
 				.ToListAsync();
 		}
