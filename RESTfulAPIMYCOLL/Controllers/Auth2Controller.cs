@@ -96,8 +96,6 @@ namespace RESTfulAPIMYCOLL.Controllers
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var userRoles = await _userManager.GetRolesAsync(user);
-
             var claims = new List<Claim> {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email??string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -106,18 +104,13 @@ namespace RESTfulAPIMYCOLL.Controllers
                 new Claim(ClaimTypes.Email, user.Email??string.Empty)
             };
 
-            foreach (var role in userRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
             var token = new JwtSecurityToken(
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
-            );
+                );
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
         }

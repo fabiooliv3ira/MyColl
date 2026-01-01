@@ -95,15 +95,23 @@
 
     private async Task CarregarImagem(InputFileChangeEventArgs e)
     {
-        var ficheiro = e.File;
-        // Limite de 5MB
-        if (ficheiro.Size > 5242880) return;
+        try
+        {
+            var ficheiro = e.File;
 
-        var buffer = new byte[ficheiro.Size];
-        await ficheiro.OpenReadStream(5242880).ReadAsync(buffer);
+            //Criar um stream de memória
+            using var stream = new MemoryStream();
 
-        produto.Imagem = buffer;
-        // Opcional: Gerar URL base64 para preview imediato se quiseres
+            await ficheiro.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10) // 10MB
+                .CopyToAsync(stream);
+
+            //Converter para array de bytes
+            produto.Imagem = stream.ToArray();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro no upload: {ex.Message}");
+        }
     }
 
     private async Task Save()
