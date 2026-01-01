@@ -2,8 +2,11 @@
 @using MYCOLL.RCL.Data.DTO
 @using MYCOLL.RCL.Services
 @inject MYCOLL.RCL.Data.Interfaces.IProdutoService ProdutoService
-@inject CategoriaService CategoriaService
+@inject SubCategoriaService SubCategoriaService
 @inject NavigationManager NavManager
+
+@attribute [Authorize(Roles = "Funcionario")]
+
 
 <AuthorizeView>
     <Authorized Context="authCtx">
@@ -32,11 +35,20 @@
                 <InputNumber @bind-Value="produto.Stock" class="form-control" />
             </div>
 
-            <!-- Seleção de Categoria (Simplificado: assume SubcategoriaId direto) -->
             <div class="mb-3">
-                <label>Subcategoria ID (Temporário)</label>
-                <InputNumber @bind-Value="produto.SubcategoriaId" class="form-control" />
-                <!-- Futuramente podes meter aqui um <select> com as subcategorias -->
+                <label for="categoriaid" class="form-label">Categoria:</label>
+                <InputSelect id="categoriaid" class="form-select" @bind-Value="@produto.SubcategoriaId">
+                    <option value="-1">Escolha uma Categoria</option>
+                    @foreach (var item in selSubCategorias)
+                    {
+                        <option value="@item.Id">@item.Nome</option>
+                    }
+                </InputSelect>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="text-danger">@errorMessage</div>
+                }
+                <ValidationMessage For="() => produto.SubcategoriaId" class="text-danger" />
             </div>
 
             <!-- Upload de Imagem -->
@@ -62,8 +74,13 @@
     [Parameter] public int? Id { get; set; }
     private ProdutoDTO produto = new ProdutoDTO();
 
+    IEnumerable<SubCategoria> selSubCategorias = Enumerable.Empty<SubCategoria>();
+
+    private string? errorMessage;
+
     protected override async Task OnInitializedAsync()
     {
+        selSubCategorias = await SubCategoriaService.GetSubCategorias();
         if (Id != null)
         {
             var existing = await ProdutoService.GetProdutoByIdAsync(Id.Value);
@@ -71,10 +88,8 @@
         }
         else
         {
-            // Valores padrão para novo produto
             produto.EstadoProduto = "Pendente"; // Fornecedores criam como Pendente
             produto.Tipo = "Venda";
-            produto.SubcategoriaId = 1; // Temporário para não dar erro de FK
         }
     }
 

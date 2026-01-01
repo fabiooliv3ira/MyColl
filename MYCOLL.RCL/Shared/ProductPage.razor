@@ -5,10 +5,6 @@
 @inject NavigationManager NavigationManager
 @inject IProdutoService ProdutoService
 @inject ICarrinhoService CarrinhoService
-
-<h3>Product Page</h3>
-<p>Product ID: @ProductId</p>
-
 <PageTitle>Criar produto</PageTitle>
 
 
@@ -36,22 +32,27 @@ else
         <dd class="col-sm-10">@produto.Preco</dd>
         
     </dl>
-    <div class="row">
-    <div class="col-md-4">
-        <EditForm method="post" Model="carrinhoDTO" OnValidSubmit="AddToCart" FormName="create" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <span class="text-danger">*</span>
-                <label for="Quantidade" class="form-label">Quantidade:</label> 
-                <InputNumber id="Quantidade" @bind-Value="carrinhoDTO.Quantidade" class="form-control" aria-required="true"/> 
-                    <ValidationMessage For="() => carrinhoDTO.Quantidade" class="text-danger" />
-            </div> 
-            <button type="submit" class="btn btn-primary">Add to cart</button>
-        </EditForm>
-    </div>
-</div>
-
+    <AuthorizeView Roles="@TipoUtilizador.cliente">
+        <Authorized Context="authContext">
+            <div class="row">
+                <div class="col-md-4">
+                    <EditForm Model="carrinhoDTO" OnValidSubmit="AddToCart">
+                        <ChildContent Context="editFormContext">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger" role="alert" />
+                            <div class="mb-3">
+                                <span class="text-danger">*</span>
+                                <label for="Quantidade" class="form-label">Quantidade:</label>
+                                <InputNumber id="Quantidade" @bind-Value="carrinhoDTO.Quantidade" class="form-control" aria-required="true" />
+                                <ValidationMessage For="() => carrinhoDTO.Quantidade" class="text-danger" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add to cart</button>
+                        </ChildContent>
+                    </EditForm>
+                </div>
+            </div>
+        </Authorized>
+    </AuthorizeView>
 }
 
 @code {

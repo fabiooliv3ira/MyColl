@@ -5,6 +5,9 @@
 @inject NavigationManager NavManager
 @inject AuthenticationStateProvider AuthStateProvider
 
+@attribute [Authorize(Roles = "Funcionario")]
+
+
 @if (!string.IsNullOrEmpty(erroFatal))
 {
     <div class="alert alert-danger">
@@ -76,10 +79,6 @@
             if (user.IsInRole("Fornecedor"))
             {
                 produtos = await ProdutoService.GetMeusProdutosAsync();
-            }
-            else
-            {
-                produtos = await ProdutoService.GetProdutosAsync();
             }
         }
         catch (Exception ex)

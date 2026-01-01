@@ -6,19 +6,16 @@
 @inject IProdutoService ProdutoService
 @inject AuthenticacaoService AuthenticacaoService
 
-
 @if (produtos != null)
 {
 	<Carousel Title="Recomendados" Type="Big" Products="produtos" />
-}
-else
-{
-	<h3>Nenhum produto disponivel!</h3>
+	<Carousel Title="Todos" Type="Small" Products="produtosTodos" />
 }
 
 @code {
 	IEnumerable<Categoria>? categorias;
 	List<ProdutoDTO>? produtos;
+	List<ProdutoDTO>? produtosTodos;
 	protected override async Task OnInitializedAsync()
 	{
 		categorias = await CategoriaService.GetCategorias();
@@ -35,5 +32,8 @@ else
 				produtos = await ProdutoService.GetProdutosByCategoria(categoriaSelecionada.Id);
 			}
 		}
+
+		produtosTodos = await ProdutoService.GetProdutosAsync();
+
 	}
 }

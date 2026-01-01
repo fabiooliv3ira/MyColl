@@ -68,7 +68,6 @@ else
             {
                 ProdutoId = produto.Id,
                 Quantidade = 1,
-                // EncomendaId: se usa encomenda existente, preenche; caso contrário use CreateEncomenda
             };
 
             var result = await CarrinhoService.AddItemAsync(item);

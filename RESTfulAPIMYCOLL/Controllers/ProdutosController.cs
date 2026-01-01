@@ -42,8 +42,8 @@ namespace RESTfulAPIMYCOLL.Controllers
 			return await _produtoRepository.ObterProdutosMaisVendidosAsync();
 		}
 
-
-		[HttpGet("Por-categoria/{categoriaId}")]
+        [AllowAnonymous]
+        [HttpGet("Por-categoria/{categoriaId}")]
 		public async Task<IEnumerable<Produto>> GetProdutosPorCategoria(int categoriaId)
 		{
 			return await _produtoRepository.ObterProdutosPorCategoriaAsync(categoriaId);

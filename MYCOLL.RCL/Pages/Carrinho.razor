@@ -4,6 +4,8 @@
 @inject ICarrinhoService CarrinhoService
 @using System.Linq
 
+@attribute [Authorize(Roles = "Cliente")]
+
 <h3>Carrinho</h3>
 
 @if (isLoading)
