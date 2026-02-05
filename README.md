@@ -32,7 +32,7 @@ O projeto baseia-se num modelo de **desacoplamento**, dividido em três componen
 *   **Pesquisa em Cascata:** Filtros reativos que atualizam subcategorias dinamicamente conforme a categoria mãe selecionada.
 *   **Upload de Imagens por Chunks:** Sistema robusto de upload de ficheiros binários via SignalR, processados em blocos de 512KB para garantir estabilidade da ligação.
 *   **Regras de Negócio Automatizadas:** Cálculo automático do preço final (Taxa Admin) e abate de stock no momento da expedição.
-*   **Segurança Híbrida:** Autenticação via Cookies (Web) e LocalStorage (Mobile), unificada por um motor JWT na API.
+*   **Segurança Híbrida:** Gestão de identidade centralizada através de tokens JWT, permitindo um fluxo de autorização seguro e consistente entre o Frontend Multiplataforma e a API RESTful.
 
 ---
 
