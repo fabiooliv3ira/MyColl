@@ -1,4 +1,4 @@
-# MyColl - Multi-platform Collectibles Platform
+# MyColl - Multi-platform Collectibles Store
 
 **MyColl** is an integrated solution developed for the management and trade of collectible items (coins, stamps, jerseys, etc.). The project leverages the **.NET 8** ecosystem to deliver a consistent experience across both Web and mobile devices, ensuring high security and scalability.
 
